@@ -135,27 +135,7 @@ ul.list li + li{border-top:1px solid var(--line)}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-(function(){
-  var SHOPS=[
-    {id:"roppo-matsumoto",name:"麺とび六方 松本本店",group:"二郎インスパイア",area:"松本市",
-     addr:"長野県松本市小屋南1-42-6",tel:"",lat:36.176697,lng:137.952194,pos:"town",jiro:4,
-     memo:"二郎インスパイア系。野菜が山盛りで、麺は存在感のある太さ。村井駅から徒歩10分弱。"},
-    {id:"roppo-nagano",name:"麺とび六方 長野店",group:"二郎インスパイア",area:"長野市",
-     addr:"長野県長野市稲葉中千田2567-1",tel:"026-214-9964",lat:36.655,lng:138.204,pos:"town",jiro:4,
-     memo:"国道18号沿い。ゆでもやしの野菜、濃いめのスープという口コミあり。長野駅から約2km。"},
-    {id:"roppo-chino",name:"麺とび六方 茅野店",group:"二郎インスパイア(フランチャイズ)",area:"茅野市",
-     addr:"",tel:"0266-82-0777",lat:35.9967,lng:138.1517,pos:"city",jiro:4,
-     memo:"野菜モリモリ、極太麺、濃いめの豚骨醤油という口コミあり。詳しい住所は未確認。"},
-    {id:"mugamuchu",name:"麺賊 夢我夢中",group:"二郎系",area:"場所未確認",
-     addr:"",tel:"0267-26-5120",lat:null,lng:null,pos:"none",jiro:3,
-     memo:"タブレット注文。野菜とニンニクは多め、スープは思ったよりあっさりという口コミあり。電話の市外局番は0267。"},
-    {id:"roppo-shiojiri",name:"麺とび六方 塩尻店",group:"二郎インスパイア",area:"塩尻市(場所未確認)",
-     addr:"",tel:"",lat:null,lng:null,pos:"none",jiro:4,
-     memo:"六方の店舗として名前だけ確認。住所は未確認。"},
-    {id:"roppo-ina",name:"麺とび六方 伊那店",group:"二郎インスパイア",area:"伊那市(場所未確認)",
-     addr:"",tel:"",lat:null,lng:null,pos:"none",jiro:4,
-     memo:"六方の店舗として名前だけ確認。住所は未確認。"}
-  ];
+fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(SHOPS){
   var BASES=[
     {n:"長野駅",lat:36.6431,lng:138.1886},{n:"松本駅",lat:36.2312,lng:137.9640},
     {n:"上田駅",lat:36.3972,lng:138.2492},{n:"佐久平駅",lat:36.2700,lng:138.4760},
@@ -286,7 +266,9 @@ ul.list li + li{border-top:1px solid var(--line)}
     drawList();});});
 
   refresh();
-})();
+}, function(){
+  document.getElementById("detail").innerHTML='<h3>店の詳細</h3><p class="empty">店のデータを読み込めませんでした。時間をおいて、ページを再読み込みしてください。</p>';
+});
 </script>
 </body>
 </html>
