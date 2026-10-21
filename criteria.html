@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>掲載の基準 | パソ二郎</title>
+<style>
+:root{--bg:#F2F1ED;--panel:#FFFFFF;--ink:#1C1915;--mute:#6B645B;--line:#D9D5CC;--sign:#F2C100;--focus:#1C5FD4;
+  --display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;--body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#14110E;--panel:#201B16;--ink:#F3EEE6;--mute:#A39A8D;--line:#3A332B;--focus:#7FAAF2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:760px;margin:0 auto}
+header{background:var(--sign);color:#1C1915;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:12px}
+header a{color:inherit;font-weight:700}
+h1{font-size:clamp(20px,5vw,26px);line-height:1.3;margin:6px 0 0}
+main{padding-block:16px 48px}
+section{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 8px;line-height:1.4}
+p{margin:0 0 8px}
+ul,ol{margin:0 0 8px;padding-left:1.4em}
+li{margin-bottom:4px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--bg)}
+td:first-child,th:first-child,td:nth-child(2),th:nth-child(2){white-space:nowrap}
+.mute{color:var(--mute);font-size:13px}
+</style>
+</head>
+<body>
+<header class="gut"><div class="inner">
+  <a href="./">← パソ二郎の地図に戻る</a>
+  <h1>どんな店を載せているか(掲載の基準)</h1>
+</div></header>
+
+<main class="gut"><div class="inner">
+
+<section>
+  <h2>この基準の目的</h2>
+  <p>「二郎系」は、はっきりした定義がありません。載せる店が人によって違うと、地図の信頼が下がります。そこで、何を根拠に載せるかを決めて、公開します。</p>
+  <p class="mute">これは試行版(v0.1)です。いまは長野県で試しています。試して分かったことをもとに直します。</p>
+</section>
+
+<section>
+  <h2>1. 店の系統(ピンの色)</h2>
+  <table>
+    <tr><th>系統</th><th>ピン</th><th>定義</th></tr>
+    <tr><td>直系</td><td>黄色</td><td>ラーメン二郎の看板を掲げる店。Wikipedia の直系店一覧にある、営業中の店です。</td></tr>
+    <tr><td>独立系</td><td>紫</td><td>元ラーメン二郎(直系店)の店主・従業員が独立して開いた店で、その店自身か信頼できる出典が明記している店。二郎の看板は掲げません。</td></tr>
+    <tr><td>インスパイア系</td><td>赤</td><td>上の2つ以外で、二郎の特徴を備えていると複数の出典が紹介している店。</td></tr>
+  </table>
+  <p class="mute">全国に何店舗も展開する大きなチェーン店は、系統を別に分けて考える必要があるため、いまは載せていません。方針が決まったら追加します。</p>
+</section>
+
+<section>
+  <h2>2. 載せる条件(独立系・インスパイア系)</h2>
+  <p>次の3つを、すべて満たす店を載せます。</p>
+  <ol>
+    <li><b>実在と営業の確認</b>: 住所が分かり、閉店・休業の表示がないこと。</li>
+    <li><b>出典が2つ以上</b>: 別々のサイトや記事が、その店を二郎系・二郎インスパイアとして紹介していること。店の公式サイトが「二郎系」と名乗っている場合は、出典1つに数えます。独立系は、元二郎の店主であることを示す出典が必要です。</li>
+    <li><b>特徴が3つ以上</b>: 下の7つの特徴のうち、3つ以上が出典の記述で確認できること。</li>
+  </ol>
+</section>
+
+<section>
+  <h2>3. 7つの特徴</h2>
+  <ul>
+    <li>太麺(極太〜太い麺)</li>
+    <li>野菜増し(野菜を無料などで増やせる)</li>
+    <li>ニンニク(無料などで入れられる)</li>
+    <li>アブラ(背脂・脂を増やせる)</li>
+    <li>塊の豚(厚切り・大きなチャーシュー)</li>
+    <li>濃いスープ(濃厚・乳化した豚骨など)</li>
+    <li>量が多い(麺量が多い、大盛が無料など)</li>
+  </ul>
+  <p class="mute">店ごとに、確認できた特徴を詳細に表示しています。</p>
+</section>
+
+<section>
+  <h2>4. 二郎度の付け方</h2>
+  <table>
+    <tr><th>確認できた特徴</th><th>二郎度</th></tr>
+    <tr><td>直系</td><td>5(本家なので一律)</td></tr>
+    <tr><td>6〜7つ</td><td>4</td></tr>
+    <tr><td>4〜5つ</td><td>3</td></tr>
+    <tr><td>3つ</td><td>2</td></tr>
+  </table>
+  <p>5は直系だけです。二郎度は、食べた感想ではなく、出典に書かれた特徴の数から決めています。</p>
+</section>
+
+<section>
+  <h2>5. 載せない店</h2>
+  <ul>
+    <li>出典が1つしかない店(のちに2つ目が見つかれば載せます)</li>
+    <li>閉店・休業が確認された店、実在を確認できない店</li>
+    <li>二郎系のメニューが期間限定だけの店、家系や一般の豚骨など、二郎とは別のガッツリ系の店</li>
+    <li>住所を確認できない店(地図に置けないため)</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. 例外</h2>
+  <p>運営者の判断で載せる店は、その理由を店の詳細に書きます。たとえば、凌駕グループの「凌駕IDEA」は、看板が煮干し醤油で、二郎系のメニューは一部だけです。それでも、凌駕グループの店として載せています。</p>
+</section>
+
+<section>
+  <h2>7. 情報の扱い</h2>
+  <ul>
+    <li>出典の文章をそのまま転載せず、事実を短くまとめています。出典は、店の詳細からたどれます。</li>
+    <li>営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。最新の情報は、店の公式Xなどで確認してください。</li>
+    <li>ピンの位置は目安です。「Googleマップで開く」で確認してください。</li>
+    <li>間違いや閉店を見つけたときは、修正します。</li>
+  </ul>
+</section>
+
+</div></main>
+</body>
+</html>

@@ -77,11 +77,12 @@ ul.list li + li{border-top:1px solid var(--line)}
 .about p:last-child{margin:0}
 
 /* map pins */
-.jp{width:26px;height:26px;border-radius:50%;background:rgba(var(--pinrgb),var(--a));border:2px solid rgb(var(--pinrgb));position:relative}
+.jp{width:20px;height:20px;border-radius:50%;background:rgba(var(--pinrgb),var(--a));border:2px solid rgb(var(--pinrgb));position:relative}
 .jp.dir{background:var(--fill);border-color:#5A3F00}
+.jp.dok{--pinrgb:92,64,168}
 .jp.city{border-style:dashed}
 .jp.sel{box-shadow:0 0 0 3px var(--ink)}
-.jp.done::after{content:"✓";position:absolute;right:-8px;top:-9px;width:16px;height:16px;border-radius:50%;background:var(--ok);color:#fff;font-size:11px;font-weight:700;line-height:16px;text-align:center}
+.jp.done::after{content:"✓";position:absolute;right:-7px;top:-8px;width:14px;height:14px;border-radius:50%;background:var(--ok);color:#fff;font-size:10px;font-weight:700;line-height:14px;text-align:center}
 .me{width:16px;height:16px;border-radius:50%;background:#1C5FD4;border:3px solid #fff;box-shadow:0 0 0 2px #1C5FD4}
 .leaflet-tooltip.nm{font-family:var(--body);font-weight:700;font-size:12px;color:#1C1915}
 </style>
@@ -101,6 +102,7 @@ ul.list li + li{border-top:1px solid var(--line)}
       <div id="map" role="application" aria-label="全国の二郎系ラーメン店マップ"></div>
       <p class="legend">
         <span>黄色のピン=ラーメン二郎の直系店</span>
+        <span>紫のピン=独立系(元二郎の店主の店)</span>
         <span>赤のピン=インスパイア系・二郎系</span>
         <span>濃いピン=二郎度が高い</span>
         <span>薄いピン=二郎度が低め</span>
@@ -128,6 +130,7 @@ ul.list li + li{border-top:1px solid var(--line)}
           <div class="seg" role="group" aria-label="店の種類">
             <button type="button" data-k="all" aria-pressed="true">全件</button>
             <button type="button" data-k="direct" aria-pressed="false">直系のみ</button>
+            <button type="button" data-k="dokuritsu" aria-pressed="false">独立系のみ</button>
             <button type="button" data-k="inspire" aria-pressed="false">インスパイア系のみ</button>
           </div>
         </div>
@@ -143,7 +146,8 @@ ul.list li + li{border-top:1px solid var(--line)}
         <h3>このデータについて</h3>
         <p>二郎度(1〜5)は、口コミにある麺の太さ、野菜の盛り、スープの濃さなどから付けた仮の値です。5が本家級です。</p>
         <p>ピンの位置は住所や駅からの距離をもとにした目安です。行く前に「Googleマップで開く」で確認してください。</p>
-        <p>ラーメン二郎の直系店は全国分を載せています。インスパイア系・二郎系は、いまのところ長野県内の店だけです。直系店は本家なので、二郎度は一律5にしています。</p>
+        <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、いまのところ長野県で試している段階です(独立系は該当する店がまだありません)。</p>
+        <p>どんな店を載せるか、二郎度をどう付けているかは、<a href="criteria.html">掲載の基準</a>に書いています。直系店は本家なので、二郎度は一律5です。</p>
         <p>営業時間・定休日は、店舗一覧サイト、食べログ、各店の公式サイトの情報をもとにした目安です。「頃」や「曜日により異なる」と書かれた店は、営業中の判定に使えません。公式Xのリンクは、一覧サイトに載っていたアカウントです。</p>
         <p>訪問チェックと評価は、このブラウザの中だけに保存されます。地図は © OpenStreetMap contributors。</p>
       </section>
@@ -172,7 +176,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
 
   var sel="jiro-mita", filter="all", kind="all", base=BASES[0], meMarker=null;
-  function inKind(s){return kind==="all"||(kind==="direct"?!!s.direct:!s.direct);}
+  function inKind(s){return kind==="all"||s.kind===kind;}
 
   /* ---------- 営業状況(日本時間。営業時間は目安) ---------- */
   var DAYS="日月火水木金土", ORDER="月火水木金土日", onlyOpen=false, HOLIDAYS={};
@@ -261,8 +265,9 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   var markers={};
   function pinIcon(s){
     var cls="jp"+(s.pos==="city"?" city":"")+(s.id===sel?" sel":"")+(db.visited[s.id]?" done":"");
-    var st=s.direct?"--fill:"+dirFill(s.jiro):"--a:"+opac(s.jiro);
-    return L.divIcon({className:"",html:'<div class="'+cls+(s.direct?" dir":"")+'" style="'+st+'"></div>',iconSize:[26,26],iconAnchor:[13,13]});
+    var st=s.kind==="direct"?"--fill:"+dirFill(s.jiro):"--a:"+opac(s.jiro);
+    var kc=s.kind==="direct"?" dir":s.kind==="dokuritsu"?" dok":"";
+    return L.divIcon({className:"",html:'<div class="'+cls+kc+'" style="'+st+'"></div>',iconSize:[20,20],iconAnchor:[10,10]});
   }
   SHOPS.forEach(function(s){
     if(s.lat==null)return;
@@ -275,7 +280,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var on=map.getZoom()>=11;
     SHOPS.forEach(function(s){var m=markers[s.id];if(!m)return;
       m.unbindTooltip();
-      m.bindTooltip(short(s.name),{permanent:on,direction:"right",offset:[14,0],className:"nm"});});
+      m.bindTooltip(short(s.name),{permanent:on,direction:"right",offset:[11,0],className:"nm"});});
   }
   drawTips();
   map.on("zoomend",drawTips);
@@ -300,6 +305,9 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       hoursHtml(s)+
       (s.closed?'<p class="meta">定休日: '+esc(s.closed)+'</p>':'')+
       (s.hnote?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
+      (s.feat?'<p class="meta">確認できた特徴: '+s.feat.map(esc).join("・")+'</p>':'')+
+      (s.exception?'<p class="meta">掲載の理由: '+esc(s.exception)+'</p>':'')+
+      (s.src&&s.src.length?'<p class="meta">出典: '+s.src.map(function(x){return '<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.t)+'</a>';}).join(" / ")+'</p>':'')+
       '<p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。最新の情報は店の公式Xなどで確認してください。</p>'+
       '<div class="row"><span class="lbl">二郎度(仮)</span>'+meter(s.jiro)+'<span class="meta">'+s.jiro+' / 5</span></div>'+
       '<p class="note">'+esc(s.memo)+'</p>'+

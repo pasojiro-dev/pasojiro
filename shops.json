@@ -9,7 +9,7 @@
     "lat": 36.176697,
     "lng": 137.952194,
     "pos": "town",
-    "jiro": 4,
+    "jiro": 3,
     "memo": "二郎インスパイア系。野菜が山盛りで、麺は存在感のある太さ。村井駅から徒歩10分弱。",
     "sched": [
       {
@@ -20,7 +20,25 @@
         ]
       }
     ],
-    "closed": "なし"
+    "closed": "なし",
+    "kind": "inspire",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 松本本店",
+        "u": "https://tabelog.com/nagano/A2002/A200201/20002013/"
+      }
+    ]
   },
   {
     "id": "roppo-nagano",
@@ -32,7 +50,7 @@
     "lat": 36.635475,
     "lng": 138.208318,
     "pos": "town",
-    "jiro": 4,
+    "jiro": 3,
     "memo": "国道18号沿い。ゆでもやしの野菜、濃いめのスープという口コミあり。長野駅から約2km。",
     "sched": [
       {
@@ -43,7 +61,25 @@
         ]
       }
     ],
-    "closed": "なし"
+    "closed": "なし",
+    "kind": "inspire",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 長野店",
+        "u": "https://tabelog.com/nagano/A2001/A200101/20022484/"
+      }
+    ]
   },
   {
     "id": "roppo-chino",
@@ -55,7 +91,7 @@
     "lat": 35.988052,
     "lng": 138.148956,
     "pos": "town",
-    "jiro": 4,
+    "jiro": 3,
     "memo": "野菜モリモリ、極太麺、濃いめの豚骨醤油という口コミあり。",
     "sched": [
       {
@@ -66,7 +102,25 @@
         ]
       }
     ],
-    "closed": "なし"
+    "closed": "なし",
+    "kind": "inspire",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 茅野店",
+        "u": "https://tabelog.com/nagano/A2004/A200403/20014821/"
+      }
+    ]
   },
   {
     "id": "mugamuchu",
@@ -88,7 +142,24 @@
         ]
       }
     ],
-    "closed": "記載なし"
+    "closed": "記載なし",
+    "kind": "inspire",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 夢我夢中",
+        "u": "https://tabelog.com/nagano/A2004/A200402/20022517/"
+      }
+    ]
   },
   {
     "id": "roppo-ina",
@@ -100,7 +171,7 @@
     "lat": 35.821354,
     "lng": 137.945605,
     "pos": "town",
-    "jiro": 4,
+    "jiro": 3,
     "memo": "六方の伊那店。最寄りはJR飯田線の下島駅。",
     "sched": [
       {
@@ -115,13 +186,30 @@
         "t": []
       }
     ],
-    "closed": "火"
+    "closed": "火",
+    "kind": "inspire",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 伊那店",
+        "u": "https://tabelog.com/nagano/A2006/A200601/20023500/"
+      }
+    ]
   },
   {
     "id": "jiro-mita",
     "name": "ラーメン二郎 三田本店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "港区",
     "addr": "東京都港区三田2-16-4",
     "tel": "",
@@ -149,13 +237,13 @@
       }
     ],
     "closed": "日・祝",
-    "hnote": "売り切れで早く終わることがあります"
+    "hnote": "売り切れで早く終わることがあります",
+    "kind": "direct"
   },
   {
     "id": "jiro-meguro",
     "name": "ラーメン二郎 目黒店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "目黒区",
     "addr": "東京都目黒区目黒3-7-2",
     "tel": "",
@@ -178,13 +266,13 @@
       }
     ],
     "closed": "水(掲載元による)",
-    "hnote": "掲載元により時間が異なります"
+    "hnote": "掲載元により時間が異なります",
+    "kind": "direct"
   },
   {
     "id": "jiro-sengawa",
     "name": "ラーメン二郎 仙川店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "調布市",
     "addr": "東京都調布市仙川町1-10-17",
     "tel": "",
@@ -206,13 +294,13 @@
       }
     ],
     "closed": "日・祝",
-    "x": "senjiro26"
+    "x": "senjiro26",
+    "kind": "direct"
   },
   {
     "id": "jiro-kabukicho",
     "name": "ラーメン二郎 新宿歌舞伎町店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "新宿区",
     "addr": "東京都新宿区歌舞伎町2-37-5",
     "tel": "",
@@ -235,13 +323,13 @@
     ],
     "closed": "水",
     "hnote": "深夜2:30頃まで。時間は「頃」の目安",
-    "x": "kabujiikeji"
+    "x": "kabujiikeji",
+    "kind": "direct"
   },
   {
     "id": "jiro-shinagawa",
     "name": "ラーメン二郎 品川店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "品川区",
     "addr": "東京都品川区北品川1-18-5",
     "tel": "",
@@ -271,13 +359,13 @@
     ],
     "closed": "日・祝",
     "hnote": "時間は「頃」の目安",
-    "x": "shinagawa26"
+    "x": "shinagawa26",
+    "kind": "direct"
   },
   {
     "id": "jiro-kotakibashi",
     "name": "ラーメン二郎 新宿小滝橋通り店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "新宿区",
     "addr": "東京都新宿区西新宿7-5-5",
     "tel": "",
@@ -293,13 +381,13 @@
       }
     ],
     "closed": "不明",
-    "hnote": "営業時間・定休日は公式Xで確認してください"
+    "hnote": "営業時間・定休日は公式Xで確認してください",
+    "kind": "direct"
   },
   {
     "id": "jiro-shindaita",
     "name": "ラーメン二郎 環七新新代田店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "世田谷区",
     "addr": "東京都世田谷区代田5-29-5",
     "tel": "",
@@ -322,13 +410,13 @@
     ],
     "closed": "月",
     "hnote": "時間は「くらい」の目安",
-    "x": "26shinshindaita"
+    "x": "26shinshindaita",
+    "kind": "direct"
   },
   {
     "id": "jiro-hachioji-yaen",
     "name": "ラーメン二郎 八王子野猿街道店2",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "八王子市",
     "addr": "東京都八王子市堀之内2-13-16",
     "tel": "",
@@ -349,13 +437,13 @@
     ],
     "closed": "月・月祝",
     "hnote": "曜日により営業時間が異なります",
-    "x": "jiro_yaenkaido2"
+    "x": "jiro_yaenkaido2",
+    "kind": "direct"
   },
   {
     "id": "jiro-ikebukuro",
     "name": "ラーメン二郎 池袋東口店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "豊島区",
     "addr": "東京都豊島区南池袋2-27-17",
     "tel": "",
@@ -377,13 +465,13 @@
       }
     ],
     "closed": "火",
-    "x": "ikejikabuji"
+    "x": "ikejikabuji",
+    "kind": "direct"
   },
   {
     "id": "jiro-kameido",
     "name": "ラーメン二郎 亀戸店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "江東区",
     "addr": "東京都江東区亀戸4-35-17",
     "tel": "",
@@ -409,13 +497,13 @@
     ],
     "closed": "記載なし",
     "hnote": "時間は「頃」の目安。定休日は未確認",
-    "x": "jiro_kame"
+    "x": "jiro_kame",
+    "kind": "direct"
   },
   {
     "id": "jiro-keikyu-kawasaki",
     "name": "ラーメン二郎 京急川崎店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "川崎市川崎区",
     "addr": "神奈川県川崎市川崎区本町2-10",
     "tel": "",
@@ -443,13 +531,13 @@
         "t": []
       }
     ],
-    "closed": "日・祝"
+    "closed": "日・祝",
+    "kind": "direct"
   },
   {
     "id": "jiro-fuchu",
     "name": "ラーメン二郎 府中店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "府中市",
     "addr": "東京都府中市宮西町1-15-5",
     "tel": "",
@@ -471,13 +559,13 @@
       }
     ],
     "closed": "土・日・祝",
-    "x": "jiro_fuchu"
+    "x": "jiro_fuchu",
+    "kind": "direct"
   },
   {
     "id": "jiro-matsudo",
     "name": "ラーメン二郎 松戸駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "松戸市",
     "addr": "千葉県松戸市本町17-9",
     "tel": "",
@@ -500,13 +588,13 @@
     ],
     "closed": "日・祝(不定休)",
     "hnote": "夜のみの営業。時間は「頃」の目安",
-    "x": "matsudojiro3"
+    "x": "matsudojiro3",
+    "kind": "direct"
   },
   {
     "id": "jiro-mejirodai",
     "name": "ラーメン二郎 めじろ台店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "八王子市",
     "addr": "東京都八王子市椚田町513-9",
     "tel": "",
@@ -535,13 +623,13 @@
       }
     ],
     "closed": "木・祝(不定休)",
-    "x": "mejirodai_jiro"
+    "x": "mejirodai_jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-ogikubo",
     "name": "ラーメン二郎 荻窪店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "杉並区",
     "addr": "東京都杉並区荻窪4-33-1",
     "tel": "",
@@ -565,13 +653,13 @@
     ],
     "closed": "日",
     "hnote": "時間は「頃」の目安",
-    "x": "ogkb_jiro"
+    "x": "ogkb_jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-kaminoge",
     "name": "ラーメン二郎 上野毛店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "世田谷区",
     "addr": "東京都世田谷区上野毛1-26-16",
     "tel": "",
@@ -600,13 +688,13 @@
       }
     ],
     "closed": "日・祝",
-    "hnote": "時間は「頃」の目安"
+    "hnote": "時間は「頃」の目安",
+    "kind": "direct"
   },
   {
     "id": "jiro-keisei-okubo",
     "name": "ラーメン二郎 京成大久保店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "船橋市",
     "addr": "千葉県船橋市三山2-1-11",
     "tel": "",
@@ -627,13 +715,13 @@
         "t": []
       }
     ],
-    "closed": "火・木・日・祝"
+    "closed": "火・木・日・祝",
+    "kind": "direct"
   },
   {
     "id": "jiro-ichinoe",
     "name": "ラーメン二郎 環七一之江店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "江戸川区",
     "addr": "東京都江戸川区一之江8-3-4",
     "tel": "",
@@ -661,13 +749,13 @@
       }
     ],
     "closed": "水",
-    "x": "ichinoejiro"
+    "x": "ichinoejiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-sagami-ono",
     "name": "ラーメン二郎 相模大野店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "相模原市南区",
     "addr": "神奈川県相模原市南区相模大野6-14-9",
     "tel": "",
@@ -688,13 +776,13 @@
     ],
     "closed": "月",
     "hnote": "曜日により営業時間が異なります",
-    "x": "sumo_jiro"
+    "x": "sumo_jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-yokohama-kannai",
     "name": "ラーメン二郎 横浜関内店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "横浜市中区",
     "addr": "神奈川県横浜市中区長者町6-94",
     "tel": "",
@@ -717,13 +805,13 @@
       }
     ],
     "closed": "水",
-    "x": "kannaijiro"
+    "x": "kannaijiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-jinbocho",
     "name": "ラーメン二郎 神田神保町店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "千代田区",
     "addr": "東京都千代田区神田神保町1-21-4",
     "tel": "",
@@ -745,13 +833,13 @@
       }
     ],
     "closed": "日・祝",
-    "x": "jbc_jimbolian"
+    "x": "jbc_jimbolian",
+    "kind": "direct"
   },
   {
     "id": "jiro-koiwa",
     "name": "ラーメン二郎 小岩店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "江戸川区",
     "addr": "東京都江戸川区西小岩3-31-13",
     "tel": "",
@@ -774,13 +862,13 @@
     ],
     "closed": "月・日・祝",
     "hnote": "麺がなくなり次第終了",
-    "x": "koiwajiro"
+    "x": "koiwajiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-hibarigaoka",
     "name": "ラーメン二郎 ひばりヶ丘駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "西東京市",
     "addr": "東京都西東京市谷戸町3-27-24",
     "tel": "",
@@ -801,13 +889,13 @@
     ],
     "closed": "日・祝(不定休)",
     "hnote": "曜日により営業時間が異なります",
-    "x": "aarf0xvdbxkwd7o"
+    "x": "aarf0xvdbxkwd7o",
+    "kind": "direct"
   },
   {
     "id": "jiro-tochigi",
     "name": "ラーメン二郎 栃木街道店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "壬生町",
     "addr": "栃木県下都賀郡壬生町本丸2-15-67",
     "tel": "",
@@ -837,13 +925,13 @@
     ],
     "closed": "日・祝(不定休)",
     "hnote": "時間は「頃」の目安",
-    "x": "tochigikaidoten"
+    "x": "tochigikaidoten",
+    "kind": "direct"
   },
   {
     "id": "jiro-tachikawa",
     "name": "ラーメン二郎 立川店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "立川市",
     "addr": "東京都立川市柴崎町2-10-1",
     "tel": "",
@@ -866,13 +954,13 @@
       }
     ],
     "closed": "火・祝(不定休)",
-    "x": "jirotachikawa"
+    "x": "jirotachikawa",
+    "kind": "direct"
   },
   {
     "id": "jiro-senju-ohashi",
     "name": "ラーメン二郎 千住大橋駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "足立区",
     "addr": "東京都足立区千住橋戸町10-8",
     "tel": "",
@@ -895,13 +983,13 @@
     ],
     "closed": "木・土・日・祝(土はテイクアウトのみ)",
     "hnote": "土曜はテイクアウトのみの営業",
-    "x": "senjujirou26"
+    "x": "senjujirou26",
+    "kind": "direct"
   },
   {
     "id": "jiro-kashiwa",
     "name": "ラーメン二郎 柏店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "柏市",
     "addr": "千葉県柏市十余二249-5",
     "tel": "",
@@ -923,13 +1011,13 @@
       }
     ],
     "closed": "日",
-    "x": "genkimoriya"
+    "x": "genkimoriya",
+    "kind": "direct"
   },
   {
     "id": "jiro-shonan-fujisawa",
     "name": "ラーメン二郎 湘南藤沢店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "藤沢市",
     "addr": "神奈川県藤沢市本町1-10-14",
     "tel": "",
@@ -952,13 +1040,13 @@
       }
     ],
     "closed": "火",
-    "x": "fujirow26"
+    "x": "fujirow26",
+    "kind": "direct"
   },
   {
     "id": "jiro-nishidai",
     "name": "ラーメン二郎 西台駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "板橋区",
     "addr": "東京都板橋区蓮根3-9-7",
     "tel": "",
@@ -979,13 +1067,13 @@
     ],
     "closed": "日・祝",
     "hnote": "曜日により営業時間が異なります",
-    "x": "jiro_nishidai"
+    "x": "jiro_nishidai",
+    "kind": "direct"
   },
   {
     "id": "jiro-nakayama",
     "name": "ラーメン二郎 中山駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "横浜市緑区",
     "addr": "神奈川県横浜市緑区台村町309-1",
     "tel": "",
@@ -1008,13 +1096,13 @@
       }
     ],
     "closed": "木",
-    "x": "nkymjiro"
+    "x": "nkymjiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-sendai",
     "name": "ラーメン二郎 仙台店2",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "仙台市青葉区",
     "addr": "宮城県仙台市青葉区一番町2-5-32",
     "tel": "",
@@ -1039,13 +1127,13 @@
       }
     ],
     "closed": "原則無休",
-    "x": "jiro_sendai1023"
+    "x": "jiro_sendai1023",
+    "kind": "direct"
   },
   {
     "id": "jiro-sapporo",
     "name": "ラーメン二郎 札幌店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "札幌市北区",
     "addr": "北海道札幌市北区北6条西8丁目8-11",
     "tel": "",
@@ -1074,13 +1162,13 @@
       }
     ],
     "closed": "日",
-    "x": "jiro_sapporo_"
+    "x": "jiro_sapporo_",
+    "kind": "direct"
   },
   {
     "id": "jiro-aizu",
     "name": "ラーメン二郎 会津若松駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "会津若松市",
     "addr": "福島県会津若松市駅前町6-31",
     "tel": "",
@@ -1114,13 +1202,13 @@
     ],
     "closed": "月、第1・3・5日曜、祝(不定休)",
     "hnote": "日曜は第2・4のみ営業のようです。土曜の時間は変わることがあります",
-    "x": "aizu_jiro"
+    "x": "aizu_jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-niigata",
     "name": "ラーメン二郎 新潟店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "新潟市中央区",
     "addr": "新潟県新潟市中央区万代5-2-8",
     "tel": "",
@@ -1140,13 +1228,13 @@
       }
     ],
     "closed": "月・木",
-    "hnote": "曜日により営業時間が異なります"
+    "hnote": "曜日により営業時間が異なります",
+    "kind": "direct"
   },
   {
     "id": "jiro-kawagoe",
     "name": "ラーメン二郎 川越店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "川越市",
     "addr": "埼玉県川越市旭町1-4-15",
     "tel": "",
@@ -1176,13 +1264,13 @@
     ],
     "closed": "月",
     "hnote": "時間は「頃」の目安",
-    "x": "kwge26"
+    "x": "kwge26",
+    "kind": "direct"
   },
   {
     "id": "jiro-kyoto",
     "name": "ラーメン二郎 京都店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "京都市左京区",
     "addr": "京都府京都市左京区一乗寺里ノ前町4",
     "tel": "",
@@ -1203,13 +1291,13 @@
     ],
     "closed": "水・不定休",
     "hnote": "昼11:00〜14:00、夜18:00〜21:30。曜日により異なります",
-    "x": "jiro_kyoto"
+    "x": "jiro_kyoto",
+    "kind": "direct"
   },
   {
     "id": "jiro-koshigaya",
     "name": "ラーメン二郎 越谷店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "越谷市",
     "addr": "埼玉県越谷市越ヶ谷2-3-7",
     "tel": "",
@@ -1232,13 +1320,13 @@
       }
     ],
     "closed": "土・日(人員が確保できた日は営業)",
-    "x": "ksgy26"
+    "x": "ksgy26",
+    "kind": "direct"
   },
   {
     "id": "jiro-maebashi",
     "name": "ラーメン二郎 前橋千代田町店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "前橋市",
     "addr": "群馬県前橋市千代田町4-12-3",
     "tel": "",
@@ -1261,13 +1349,13 @@
       }
     ],
     "closed": "月",
-    "x": "snbzt6ercdz7lqw"
+    "x": "snbzt6ercdz7lqw",
+    "kind": "direct"
   },
   {
     "id": "jiro-chiba",
     "name": "ラーメン二郎 千葉店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "千葉市中央区",
     "addr": "千葉県千葉市中央区中央1-7-8",
     "tel": "",
@@ -1290,13 +1378,13 @@
       }
     ],
     "closed": "日・祝(不定休)",
-    "x": "jiro_chiba"
+    "x": "jiro_chiba",
+    "kind": "direct"
   },
   {
     "id": "jiro-omiya-koen",
     "name": "ラーメン二郎 大宮公園駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "さいたま市大宮区",
     "addr": "埼玉県さいたま市大宮区寿能町1-24",
     "tel": "",
@@ -1325,13 +1413,13 @@
       }
     ],
     "closed": "水",
-    "x": "omiyapark26"
+    "x": "omiyapark26",
+    "kind": "direct"
   },
   {
     "id": "jiro-hitachinaka",
     "name": "ラーメン二郎 ひたちなか店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "ひたちなか市",
     "addr": "茨城県ひたちなか市田彦1648-4",
     "tel": "",
@@ -1361,13 +1449,13 @@
     ],
     "closed": "日",
     "hnote": "時間は「頃」の目安。連休は変更あり",
-    "x": "26_hitachinaka"
+    "x": "26_hitachinaka",
+    "kind": "direct"
   },
   {
     "id": "jiro-hitotsubashi",
     "name": "ラーメン二郎 一橋学園店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "小平市",
     "addr": "東京都小平市学園西町2-13-4",
     "tel": "",
@@ -1395,13 +1483,13 @@
     ],
     "closed": "木",
     "hnote": "祝日は告知により営業。土日の時間は要確認",
-    "x": "1284jiro"
+    "x": "1284jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-ikuta",
     "name": "ラーメン二郎 生田駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "川崎市多摩区",
     "addr": "神奈川県川崎市多摩区生田8-1-15",
     "tel": "",
@@ -1424,13 +1512,13 @@
       }
     ],
     "closed": "水",
-    "x": "ikuta_jiro"
+    "x": "ikuta_jiro",
+    "kind": "direct"
   },
   {
     "id": "jiro-asakura",
     "name": "ラーメン二郎 朝倉街道駅前店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "筑紫野市",
     "addr": "福岡県筑紫野市針摺中央2-17-8",
     "tel": "",
@@ -1459,13 +1547,13 @@
       }
     ],
     "closed": "土・日・祝(不定休)",
-    "x": "r26akgd"
+    "x": "r26akgd",
+    "kind": "direct"
   },
   {
     "id": "jiro-nagoya-oneso",
     "name": "ラーメン二郎 名古屋大曽根店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "名古屋市東区",
     "addr": "愛知県名古屋市東区矢田4-3-7",
     "tel": "",
@@ -1494,13 +1582,13 @@
       }
     ],
     "closed": "日",
-    "x": "jiro_NGY"
+    "x": "jiro_NGY",
+    "kind": "direct"
   },
   {
     "id": "jiro-okinawa",
     "name": "ラーメン二郎 沖縄店",
     "group": "ラーメン二郎 直系",
-    "direct": true,
     "area": "那覇市",
     "addr": "沖縄県那覇市壺屋1-6-16",
     "tel": "",
@@ -1530,7 +1618,8 @@
     ],
     "closed": "水(予定)",
     "hnote": "開店直後の情報です",
-    "x": "okinawa_jiro"
+    "x": "okinawa_jiro",
+    "kind": "direct"
   },
   {
     "id": "ryoga-idea-matsumoto",
@@ -1552,7 +1641,15 @@
         ]
       }
     ],
-    "closed": "なし"
+    "closed": "なし",
+    "kind": "inspire",
+    "exception": "運営者の判断で掲載(凌駕グループ。看板は煮干し醤油で、二郎系のメニューは一部)",
+    "src": [
+      {
+        "t": "凌駕 公式サイト",
+        "u": "https://ryo-ga.com/shop/ryoga_idea_matsumoto/"
+      }
+    ]
   },
   {
     "id": "ryoga-idea-aeon",
@@ -1575,7 +1672,15 @@
       }
     ],
     "closed": "イオンモール松本の休業日",
-    "hnote": "イオンモールの営業時間に準じます"
+    "hnote": "イオンモールの営業時間に準じます",
+    "kind": "inspire",
+    "exception": "運営者の判断で掲載(凌駕グループ。看板は煮干し醤油で、二郎系のメニューは一部)",
+    "src": [
+      {
+        "t": "凌駕 公式サイト",
+        "u": "https://ryo-ga.com/shop/ryoga_idea_matsumoto_aeonmall/"
+      }
+    ]
   },
   {
     "id": "ryoga-idea-nagano",
@@ -1604,7 +1709,15 @@
         ]
       }
     ],
-    "closed": "記載なし"
+    "closed": "記載なし",
+    "kind": "inspire",
+    "exception": "運営者の判断で掲載(凌駕グループ。看板は煮干し醤油で、二郎系のメニューは一部)",
+    "src": [
+      {
+        "t": "凌駕 公式サイト",
+        "u": "https://ryo-ga.com/shop/ryoga_idea_nagano/"
+      }
+    ]
   },
   {
     "id": "nibojiro",
@@ -1627,6 +1740,281 @@
         ]
       }
     ],
-    "closed": "なし"
+    "closed": "なし",
+    "kind": "inspire",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "量が多い",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "凌駕 公式サイト",
+        "u": "https://ryo-ga.com/shop/nibojiro/"
+      },
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      }
+    ]
+  },
+  {
+    "id": "masuton",
+    "name": "麺屋 増豚",
+    "group": "二郎インスパイア",
+    "area": "長野市",
+    "addr": "長野県長野市篠ノ井会5-22",
+    "tel": "",
+    "jiro": 3,
+    "memo": "農家が営む二郎系インスパイア。2021年12月開店。野菜・ニンニク・アブラは無料でマシマシまで増やせる。麺は極太(オーション小麦)。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "SUSURU TV 長野二郎系編(2025年6月)",
+        "u": "https://www.susurulab.co.jp/nagano-jiro/"
+      }
+    ],
+    "closed": "なし(記事より)",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "kind": "inspire",
+    "lat": 36.575165,
+    "lng": 138.145523,
+    "pos": "town"
+  },
+  {
+    "id": "kisaburo-ueda",
+    "name": "麺賊 喜三郎 上田店",
+    "group": "二郎インスパイア",
+    "area": "上田市",
+    "addr": "長野県上田市古里1540-3",
+    "tel": "",
+    "jiro": 3,
+    "memo": "野菜・ニンニク・アブラを無料で増やせる。麺の大盛も無料。濃厚な豚骨。塩田店(上田市本郷)もあるが、出典が1つのため未掲載。",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "量が多い",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "SUSURU TV 長野二郎系編(2025年6月)",
+        "u": "https://www.susurulab.co.jp/nagano-jiro/"
+      }
+    ],
+    "closed": "記載なし",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "kind": "inspire",
+    "lat": 36.391647,
+    "lng": 138.27858,
+    "pos": "town"
+  },
+  {
+    "id": "hananona",
+    "name": "麺屋 花の名",
+    "group": "二郎インスパイア",
+    "area": "佐久市",
+    "addr": "長野県佐久市猿久保667-5",
+    "tel": "",
+    "jiro": 4,
+    "memo": "極太麺か平打ち麺を選べ、中ラーメンで麺300g。乳化した濃厚な豚骨で、厚切りの豚。野菜・ニンニク・アブラはマシマシまで無料。食べ残すとペナルティあり。カウンター8席。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "塊の豚",
+      "濃いスープ",
+      "量が多い"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "SUSURU TV 長野二郎系編(2025年6月)",
+        "u": "https://www.susurulab.co.jp/nagano-jiro/"
+      },
+      {
+        "t": "Retty 麺屋 花の名",
+        "u": "https://retty.me/restaurant/100001532243/"
+      }
+    ],
+    "closed": "水",
+    "sched": [
+      {
+        "d": "月火木金土日祝",
+        "t": [
+          "11:30-14:00",
+          "18:00-21:00"
+        ]
+      },
+      {
+        "d": "水",
+        "t": []
+      }
+    ],
+    "hnote": "1日60杯限定で、終わり次第終了(掲載元より)",
+    "kind": "inspire",
+    "lat": 36.256962,
+    "lng": 138.472443,
+    "pos": "town"
+  },
+  {
+    "id": "marunaka-suwa",
+    "name": "ラーメン まるなか",
+    "group": "二郎インスパイア",
+    "area": "諏訪市",
+    "addr": "長野県諏訪市湖岸通り3-1-24",
+    "tel": "",
+    "jiro": 3,
+    "memo": "極太でコシのある麺。野菜・ニンニクを増やせ、麺の大盛は無料。豚骨と鶏のダブルスープ。建物の2階。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "量が多い"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "SUSURU TV 長野二郎系編(2025年6月)",
+        "u": "https://www.susurulab.co.jp/nagano-jiro/"
+      }
+    ],
+    "closed": "水(一部の平日の昼も休み)",
+    "sched": [
+      {
+        "d": "水",
+        "t": []
+      },
+      {
+        "d": "月火木金土日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "kind": "inspire",
+    "lat": 36.049782,
+    "lng": 138.113129,
+    "pos": "town"
+  },
+  {
+    "id": "roppo-matsukawa",
+    "name": "麺とび六方 松川店",
+    "group": "二郎インスパイア",
+    "area": "松川村",
+    "addr": "長野県北安曇郡松川村5744-4",
+    "tel": "0261-85-6601",
+    "jiro": 3,
+    "memo": "六方の松川村の店。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 松川店",
+        "u": "https://tabelog.com/nagano/A2005/A200502/20018469/"
+      }
+    ],
+    "closed": "月",
+    "sched": [
+      {
+        "d": "火〜日",
+        "t": [
+          "11:30-15:00",
+          "17:30-22:00"
+        ]
+      },
+      {
+        "d": "月",
+        "t": []
+      }
+    ],
+    "kind": "inspire",
+    "lat": 36.416021,
+    "lng": 137.858646,
+    "pos": "town"
+  },
+  {
+    "id": "roppo-elsa",
+    "name": "麺とび六方 エルサあづみ野店",
+    "group": "二郎インスパイア",
+    "area": "安曇野市",
+    "addr": "長野県安曇野市三郷温2716-1",
+    "tel": "0263-88-9664",
+    "jiro": 3,
+    "memo": "六方の安曇野市の店。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "ts-gourmet 長野県の二郎系まとめ(2026年7月)",
+        "u": "https://ts-gourmet.net/nagano-jiro/"
+      },
+      {
+        "t": "食べログ 六方 エルサあづみ野店",
+        "u": "https://tabelog.com/nagano/A2002/A200201/20025540/"
+      }
+    ],
+    "closed": "なし",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": [
+          "11:30-15:00",
+          "17:30-21:00"
+        ]
+      }
+    ],
+    "kind": "inspire",
+    "lat": 36.244884,
+    "lng": 137.888824,
+    "pos": "town"
   }
 ]
