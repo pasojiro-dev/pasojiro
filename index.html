@@ -69,6 +69,9 @@ ul.list li + li{border-top:1px solid var(--line)}
 .item .dist{font-variant-numeric:tabular-nums;font-weight:700;text-align:right;white-space:nowrap}
 .item .sm{font-size:12.5px;color:var(--mute);display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center}
 .chk{color:var(--ok);font-weight:700}
+.st-open{color:var(--ok);font-weight:700}
+.st-off{color:var(--mute)}
+.hours{margin:8px 0 0;font-size:13px;color:var(--mute)}
 .sect{margin:14px 0 4px;font-size:12.5px;font-weight:700;color:var(--mute);letter-spacing:.06em}
 .about p{margin:0 0 6px;font-size:13px}
 .about p:last-child{margin:0}
@@ -128,7 +131,11 @@ ul.list li + li{border-top:1px solid var(--line)}
             <button type="button" data-k="inspire" aria-pressed="false">インスパイア系のみ</button>
           </div>
         </div>
+        <div class="ctrl" style="margin-top:10px">
+          <button type="button" class="btn" id="openonly" aria-pressed="false">いま営業中の店だけ</button>
+        </div>
         <p class="note" id="gpsmsg" hidden></p>
+        <p class="note" id="openmsg" hidden></p>
         <div id="list"></div>
       </section>
 
@@ -137,6 +144,7 @@ ul.list li + li{border-top:1px solid var(--line)}
         <p>二郎度(1〜5)は、口コミにある麺の太さ、野菜の盛り、スープの濃さなどから付けた仮の値です。5が本家級です。</p>
         <p>ピンの位置は住所や駅からの距離をもとにした目安です。行く前に「Googleマップで開く」で確認してください。</p>
         <p>ラーメン二郎の直系店は全国分を載せています。インスパイア系・二郎系は、いまのところ長野県内の店だけです。直系店は本家なので、二郎度は一律5にしています。</p>
+        <p>営業時間・定休日は、店舗一覧サイト、食べログ、各店の公式サイトの情報をもとにした目安です。「頃」や「曜日により異なる」と書かれた店は、営業中の判定に使えません。公式Xのリンクは、一覧サイトに載っていたアカウントです。</p>
         <p>訪問チェックと評価は、このブラウザの中だけに保存されます。地図は © OpenStreetMap contributors。</p>
       </section>
     </div>
@@ -165,6 +173,80 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
 
   var sel="jiro-mita", filter="all", kind="all", base=BASES[0], meMarker=null;
   function inKind(s){return kind==="all"||(kind==="direct"?!!s.direct:!s.direct);}
+
+  /* ---------- 営業状況(日本時間。営業時間は目安) ---------- */
+  var DAYS="日月火水木金土", ORDER="月火水木金土日", onlyOpen=false, HOLIDAYS={};
+  ["2026-01-01","2026-01-12","2026-02-11","2026-02-23","2026-03-20","2026-04-29","2026-05-03","2026-05-04","2026-05-05","2026-05-06","2026-07-20","2026-08-11","2026-09-21","2026-09-22","2026-09-23","2026-10-12","2026-11-03","2026-11-23",
+   "2027-01-01","2027-01-11","2027-02-11","2027-02-23","2027-03-21","2027-03-22","2027-04-29","2027-05-03","2027-05-04","2027-05-05","2027-07-19","2027-08-11","2027-09-20","2027-09-23","2027-10-11","2027-11-03","2027-11-23"].forEach(function(k){HOLIDAYS[k]=1;});
+  function pad(n){return (n<10?"0":"")+n;}
+  function hm(t){var p=t.split(":");return +p[0]*60+ +p[1];}
+  function fm(m){return (m>=1440?"翌":"")+Math.floor(m/60)%24+":"+pad(m%60);}
+  function fr(x){var a=x.split("-");return fm(hm(a[0]))+"〜"+(a[1]==="?"?"(終了不明)":fm(hm(a[1])));}
+  function jst(d){
+    var p={};new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(d).forEach(function(x){p[x.type]=x.value;});
+    return {key:p.year+"-"+p.month+"-"+p.day,wd:new Date(Date.UTC(+p.year,+p.month-1,+p.day)).getUTCDay(),min:+p.hour*60+ +p.minute};
+  }
+  function parseDays(d){
+    var set={},hol=false,prev=null,i,c,e,k;
+    for(i=0;i<d.length;i++){
+      c=d.charAt(i);
+      if(c==="〜"){e=d.charAt(++i);for(k=ORDER.indexOf(prev);k<=ORDER.indexOf(e);k++)set[DAYS.indexOf(ORDER.charAt(k))]=1;prev=e;continue;}
+      if(c==="祝"){hol=true;continue;}
+      set[DAYS.indexOf(c)]=1;prev=c;
+    }
+    return {set:set,hol:hol};
+  }
+  SHOPS.forEach(function(s){
+    if(!s.sched)return;
+    s._rows=s.sched.map(function(r){
+      var pd=parseDays(r.d);
+      return {set:pd.set,hol:pd.hol,r:r.t?r.t.map(function(x){var a=x.split("-");return {a:hm(a[0]),b:a[1]==="?"?null:hm(a[1])};}):null};
+    });
+  });
+  function rowFor(s,wd,hol){
+    var i;
+    if(!s._rows)return null;
+    if(hol)for(i=0;i<s._rows.length;i++)if(s._rows[i].hol)return s._rows[i];
+    for(i=0;i<s._rows.length;i++)if(s._rows[i].set[wd])return s._rows[i];
+    return null;
+  }
+  /* st: open / off / unknown */
+  function openState(s,now){
+    var t=jst(now),y=jst(new Date(now.getTime()-864e5)),i,g,r;
+    r=rowFor(s,y.wd,!!HOLIDAYS[y.key]);
+    if(r&&r.r)for(i=0;i<r.r.length;i++){g=r.r[i];if(g.b!=null&&g.b>1440&&t.min<g.b-1440)return {st:"open",until:g.b-1440};}
+    r=rowFor(s,t.wd,!!HOLIDAYS[t.key]);
+    if(!r||r.r===null)return {st:"unknown"};
+    if(!r.r.length)return {st:"off",why:"定休日"};
+    for(i=0;i<r.r.length;i++){
+      g=r.r[i];
+      if(t.min>=g.a){if(g.b==null)return {st:"unknown"};if(t.min<g.b)return {st:"open",until:g.b};}
+    }
+    return {st:"off",why:"営業時間外"};
+  }
+  function stText(s){
+    var o=openState(s,new Date());
+    if(o.st==="open")return '<span class="st-open">営業中(〜'+fm(o.until)+')</span>';
+    return '<span class="st-off">'+(o.st==="off"?o.why:"営業状況は要確認")+'</span>';
+  }
+  function stBadge(s){
+    var o=openState(s,new Date());
+    return o.st==="open"?'<span class="st-open">営業中</span>':o.st==="off"?'<span class="st-off">'+o.why+'</span>':"";
+  }
+  function hoursHtml(s){
+    var L=[];
+    if(!s.sched)return "";
+    s.sched.forEach(function(r){if(r.t===null)L.push(esc(r.d)+" 要確認");else if(r.t.length)L.push(esc(r.d)+" "+r.t.map(fr).join(" / "));});
+    return '<p class="hours"><b>営業時間(目安)</b><br>'+L.join("<br>")+'</p>';
+  }
+  function visible(s){return inKind(s)&&(!onlyOpen||openState(s,new Date()).st==="open");}
+  function updateOpenMsg(){
+    var el=document.getElementById("openmsg");
+    if(!onlyOpen){el.hidden=true;return;}
+    var n=SHOPS.filter(function(s){return inKind(s)&&openState(s,new Date()).st==="unknown";}).length;
+    el.textContent="営業時間から判断した目安です。営業時間が不明の店("+n+"軒)は出ません。祝日・臨時休業・売り切れ終了は反映されません。最新の情報は店の公式Xなどで確認してください。";
+    el.hidden=false;
+  }
   function km(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r*Math.cos((a+c)/2*r);return Math.sqrt(x*x+y*y)*R;}
   function dist(s){return s.lat==null?null:km(base.lat,base.lng,s.lat,s.lng);}
   function opac(j){return (0.3+0.7*(j-1)/4).toFixed(2);}
@@ -214,10 +296,16 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<p class="meta">'+esc(s.group)+'</p>'+
       '<p class="meta">'+(s.addr?esc(s.addr):"住所は未確認")+(s.tel?' ・ '+esc(s.tel):"")+'</p>'+
       (dd!=null?'<p class="meta">'+esc(base.n)+'から約'+dd.toFixed(1)+'km(直線)</p>':'')+
+      '<p class="meta">いま: '+stText(s)+'</p>'+
+      hoursHtml(s)+
+      (s.closed?'<p class="meta">定休日: '+esc(s.closed)+'</p>':'')+
+      (s.hnote?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
+      '<p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。最新の情報は店の公式Xなどで確認してください。</p>'+
       '<div class="row"><span class="lbl">二郎度(仮)</span>'+meter(s.jiro)+'<span class="meta">'+s.jiro+' / 5</span></div>'+
       '<p class="note">'+esc(s.memo)+'</p>'+
       '<div class="row"><button type="button" class="btn" id="vis" aria-pressed="'+v+'">'+(v?"✓ 行った":"行った店にする")+'</button>'+
-      '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank" rel="noopener">Googleマップで開く</a></div>'+
+      '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank" rel="noopener">Googleマップで開く</a>'+
+      '<a class="linkbtn" href="'+(s.x?"https://x.com/"+encodeURIComponent(s.x):"https://x.com/search?f=user&q="+encodeURIComponent(s.name))+'" target="_blank" rel="noopener">'+(s.x?"公式Xを見る":"Xで店を探す")+'</a></div>'+
       '<div class="row"><span class="lbl">自分の評価</span><span class="stars">'+stars+'</span></div>'+
       '<label class="lbl" for="memo" style="display:block;margin-top:10px">メモ</label>'+
       '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea>'+
@@ -235,10 +323,10 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var dd=dist(s), r=db.rating[s.id]||0;
     return '<li><button type="button" class="item" data-id="'+s.id+'"'+(s.id===sel?' aria-current="true"':'')+'>'+
       '<span class="nm">'+esc(s.name)+'</span><span class="dist">'+(dd!=null?dd.toFixed(1)+' km':'—')+'</span>'+
-      '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
+      '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+stBadge(s)+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
   }
   function drawList(){
-    var arr=SHOPS.filter(function(s){return inKind(s)&&(filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]));});
+    var arr=SHOPS.filter(function(s){return visible(s)&&(filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]));});
     var placed=arr.filter(function(s){return s.lat!=null;}).sort(function(a,b){return dist(a)-dist(b);});
     var un=arr.filter(function(s){return s.lat==null;});
     var h="";
@@ -256,8 +344,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     refresh();
   }
   function showKind(){SHOPS.forEach(function(s){var m=markers[s.id];if(!m)return;
-    var on=inKind(s);if(on&&!map.hasLayer(m))m.addTo(map);if(!on&&map.hasLayer(m))map.removeLayer(m);});}
-  function refresh(){showKind();refreshPins();drawDetail();drawList();}
+    var on=visible(s);if(on&&!map.hasLayer(m))m.addTo(map);if(!on&&map.hasLayer(m))map.removeLayer(m);});}
+  function refresh(){showKind();updateOpenMsg();refreshPins();drawDetail();drawList();}
 
   /* ---------- base place / GPS ---------- */
   var bs=document.getElementById("base");
@@ -277,7 +365,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       base=me;fillBase();
       if(meMarker)map.removeLayer(meMarker);
       meMarker=L.marker([me.lat,me.lng],{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]}),title:"現在地"}).addTo(map);
-      var near=SHOPS.filter(function(s){return s.lat!=null&&inKind(s);}).sort(function(a,b){return dist(a)-dist(b);})[0];
+      var near=SHOPS.filter(function(s){return s.lat!=null&&visible(s);}).sort(function(a,b){return dist(a)-dist(b);})[0];
       if(near)map.fitBounds([[me.lat,me.lng],[near.lat,near.lng]],{padding:[60,60],maxZoom:14});else map.setView([me.lat,me.lng],12);
       say("現在地から近い順に並べました。位置情報はこの端末の中だけで使い、送信や保存はしていません。");
       refresh();
@@ -294,6 +382,9 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   }
   segment("data-f",function(v){filter=v;drawList();});
   segment("data-k",function(v){kind=v;refresh();});
+  var openBtn=document.getElementById("openonly");
+  openBtn.addEventListener("click",function(){onlyOpen=!onlyOpen;openBtn.setAttribute("aria-pressed",String(onlyOpen));refresh();});
+  setInterval(function(){if(onlyOpen){showKind();updateOpenMsg();}drawList();},60000);
 
   refresh();
 }, function(){
