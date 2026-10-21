@@ -121,6 +121,13 @@ ul.list li + li{border-top:1px solid var(--line)}
             <button type="button" data-f="done" aria-pressed="false">訪問済み</button>
           </div>
         </div>
+        <div class="ctrl" style="margin-top:10px">
+          <div class="seg" role="group" aria-label="店の種類">
+            <button type="button" data-k="all" aria-pressed="true">全件</button>
+            <button type="button" data-k="direct" aria-pressed="false">直系のみ</button>
+            <button type="button" data-k="inspire" aria-pressed="false">インスパイア系のみ</button>
+          </div>
+        </div>
         <p class="note" id="gpsmsg" hidden></p>
         <div id="list"></div>
       </section>
@@ -156,7 +163,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==="object"){db.visited=p.visited||{};db.rating=p.rating||{};db.memo=p.memo||{};}}}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
 
-  var sel="jiro-mita", filter="all", base=BASES[0], meMarker=null;
+  var sel="jiro-mita", filter="all", kind="all", base=BASES[0], meMarker=null;
+  function inKind(s){return kind==="all"||(kind==="direct"?!!s.direct:!s.direct);}
   function km(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r*Math.cos((a+c)/2*r);return Math.sqrt(x*x+y*y)*R;}
   function dist(s){return s.lat==null?null:km(base.lat,base.lng,s.lat,s.lng);}
   function opac(j){return (0.3+0.7*(j-1)/4).toFixed(2);}
@@ -230,7 +238,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
   }
   function drawList(){
-    var arr=SHOPS.filter(function(s){return filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]);});
+    var arr=SHOPS.filter(function(s){return inKind(s)&&(filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]));});
     var placed=arr.filter(function(s){return s.lat!=null;}).sort(function(a,b){return dist(a)-dist(b);});
     var un=arr.filter(function(s){return s.lat==null;});
     var h="";
@@ -247,7 +255,9 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     if(pan&&s&&s.lat!=null)map.setView([s.lat,s.lng],Math.max(map.getZoom(),12));
     refresh();
   }
-  function refresh(){refreshPins();drawDetail();drawList();}
+  function showKind(){SHOPS.forEach(function(s){var m=markers[s.id];if(!m)return;
+    var on=inKind(s);if(on&&!map.hasLayer(m))m.addTo(map);if(!on&&map.hasLayer(m))map.removeLayer(m);});}
+  function refresh(){showKind();refreshPins();drawDetail();drawList();}
 
   /* ---------- base place / GPS ---------- */
   var bs=document.getElementById("base");
@@ -267,7 +277,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       base=me;fillBase();
       if(meMarker)map.removeLayer(meMarker);
       meMarker=L.marker([me.lat,me.lng],{icon:L.divIcon({className:"",html:'<div class="me"></div>',iconSize:[16,16],iconAnchor:[8,8]}),title:"現在地"}).addTo(map);
-      var near=SHOPS.filter(function(s){return s.lat!=null;}).sort(function(a,b){return dist(a)-dist(b);})[0];
+      var near=SHOPS.filter(function(s){return s.lat!=null&&inKind(s);}).sort(function(a,b){return dist(a)-dist(b);})[0];
       if(near)map.fitBounds([[me.lat,me.lng],[near.lat,near.lng]],{padding:[60,60],maxZoom:14});else map.setView([me.lat,me.lng],12);
       say("現在地から近い順に並べました。位置情報はこの端末の中だけで使い、送信や保存はしていません。");
       refresh();
@@ -276,10 +286,14 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     },{enableHighAccuracy:false,timeout:10000,maximumAge:60000});
   });
 
-  document.querySelectorAll(".seg button").forEach(function(b){b.addEventListener("click",function(){
-    filter=b.getAttribute("data-f");
-    document.querySelectorAll(".seg button").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});
-    drawList();});});
+  function segment(attr,onPick){
+    var btns=document.querySelectorAll(".seg button["+attr+"]");
+    btns.forEach(function(b){b.addEventListener("click",function(){
+      onPick(b.getAttribute(attr));
+      btns.forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});});});
+  }
+  segment("data-f",function(v){filter=v;drawList();});
+  segment("data-k",function(v){kind=v;refresh();});
 
   refresh();
 }, function(){
