@@ -55,7 +55,7 @@ def main():
             print(f"! {s['name']}: 住所が見つかりません ({s['addr']})")
             continue
         lat, lng, title = res
-        precise = "番地" in title or ("番" in title and "号" in title)
+        precise = "番" in title
         if has:
             d = km(s["lat"], s["lng"], lat, lng)
             mark = "要確認" if d > WARN_KM else "OK"

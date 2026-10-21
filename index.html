@@ -75,6 +75,7 @@ ul.list li + li{border-top:1px solid var(--line)}
 
 /* map pins */
 .jp{width:26px;height:26px;border-radius:50%;background:rgba(var(--pinrgb),var(--a));border:2px solid rgb(var(--pinrgb));position:relative}
+.jp.dir{background:var(--fill);border-color:#5A3F00}
 .jp.city{border-style:dashed}
 .jp.sel{box-shadow:0 0 0 3px var(--ink)}
 .jp.done::after{content:"✓";position:absolute;right:-8px;top:-9px;width:16px;height:16px;border-radius:50%;background:var(--ok);color:#fff;font-size:11px;font-weight:700;line-height:16px;text-align:center}
@@ -86,7 +87,7 @@ ul.list li + li{border-top:1px solid var(--line)}
 <header class="band gut">
   <div class="inner">
     <h1>パソ二郎</h1>
-    <p class="sub">長野県の二郎系マップ(試作版)</p>
+    <p class="sub">全国の二郎系マップ(試作版)</p>
     <p class="beta">ラーメン二郎の公式アプリではありません。店の情報は検索で確認できたものだけを載せています。</p>
   </div>
 </header>
@@ -94,8 +95,10 @@ ul.list li + li{border-top:1px solid var(--line)}
 <main class="gut">
   <div class="inner grid">
     <div class="col mapcol">
-      <div id="map" role="application" aria-label="長野県の二郎系ラーメン店マップ"></div>
+      <div id="map" role="application" aria-label="全国の二郎系ラーメン店マップ"></div>
       <p class="legend">
+        <span>黄色のピン=ラーメン二郎の直系店</span>
+        <span>赤のピン=インスパイア系・二郎系</span>
         <span>濃いピン=二郎度が高い</span>
         <span>薄いピン=二郎度が低め</span>
         <span>点線のピン=位置は市の中心に仮置き</span>
@@ -126,7 +129,7 @@ ul.list li + li{border-top:1px solid var(--line)}
         <h3>このデータについて</h3>
         <p>二郎度(1〜5)は、口コミにある麺の太さ、野菜の盛り、スープの濃さなどから付けた仮の値です。5が本家級です。</p>
         <p>ピンの位置は住所や駅からの距離をもとにした目安です。行く前に「Googleマップで開く」で確認してください。</p>
-        <p>今回の検索では、長野県内にラーメン二郎の直系店は見つかりませんでした。インスパイア系を中心に載せています。</p>
+        <p>ラーメン二郎の直系店は全国分を載せています。インスパイア系・二郎系は、いまのところ長野県内の店だけです。直系店は本家なので、二郎度は一律5にしています。</p>
         <p>訪問チェックと評価は、このブラウザの中だけに保存されます。地図は © OpenStreetMap contributors。</p>
       </section>
     </div>
@@ -137,6 +140,11 @@ ul.list li + li{border-top:1px solid var(--line)}
 <script>
 fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(SHOPS){
   var BASES=[
+    {n:"東京駅",lat:35.6812,lng:139.7671},{n:"新宿駅",lat:35.6896,lng:139.7006},
+    {n:"横浜駅",lat:35.4658,lng:139.6224},{n:"名古屋駅",lat:35.1709,lng:136.8815},
+    {n:"京都駅",lat:34.9858,lng:135.7588},{n:"大阪駅",lat:34.7025,lng:135.4959},
+    {n:"札幌駅",lat:43.0687,lng:141.3508},{n:"仙台駅",lat:38.2601,lng:140.8824},
+    {n:"新潟駅",lat:37.9120,lng:139.0616},{n:"博多駅",lat:33.5897,lng:130.4207},
     {n:"長野駅",lat:36.6431,lng:138.1886},{n:"松本駅",lat:36.2312,lng:137.9640},
     {n:"上田駅",lat:36.3972,lng:138.2492},{n:"佐久平駅",lat:36.2700,lng:138.4760},
     {n:"上諏訪駅",lat:36.0420,lng:138.1140},{n:"伊那市駅",lat:35.8270,lng:137.9540},
@@ -148,31 +156,39 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==="object"){db.visited=p.visited||{};db.rating=p.rating||{};db.memo=p.memo||{};}}}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
 
-  var sel="roppo-nagano", filter="all", base=BASES[0], meMarker=null;
+  var sel="jiro-mita", filter="all", base=BASES[0], meMarker=null;
   function km(a,b,c,d){var R=6371,r=Math.PI/180,x=(c-a)*r,y=(d-b)*r*Math.cos((a+c)/2*r);return Math.sqrt(x*x+y*y)*R;}
   function dist(s){return s.lat==null?null:km(base.lat,base.lng,s.lat,s.lng);}
   function opac(j){return (0.3+0.7*(j-1)/4).toFixed(2);}
+  function dirFill(j){return "hsl(47 100% "+(82-(j-1)*10.5).toFixed(0)+"%)";}
   function meter(j){var h='<span class="meter" role="img" aria-label="二郎度 '+j+' / 5">';for(var i=1;i<=5;i++)h+='<b class="'+(i<=j?'on':'')+'"></b>';return h+'</span>';}
   function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
   function short(n){return n.replace("麺とび六方 ","六方 ");}
 
   /* ---------- map ---------- */
-  var map=L.map("map",{zoomControl:true}).setView([36.45,138.0],8);
+  var map=L.map("map",{zoomControl:true}).setView([36.0,138.6],7);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
   var markers={};
   function pinIcon(s){
     var cls="jp"+(s.pos==="city"?" city":"")+(s.id===sel?" sel":"")+(db.visited[s.id]?" done":"");
-    return L.divIcon({className:"",html:'<div class="'+cls+'" style="--a:'+opac(s.jiro)+'"></div>',iconSize:[26,26],iconAnchor:[13,13]});
+    var st=s.direct?"--fill:"+dirFill(s.jiro):"--a:"+opac(s.jiro);
+    return L.divIcon({className:"",html:'<div class="'+cls+(s.direct?" dir":"")+'" style="'+st+'"></div>',iconSize:[26,26],iconAnchor:[13,13]});
   }
   SHOPS.forEach(function(s){
     if(s.lat==null)return;
     var m=L.marker([s.lat,s.lng],{icon:pinIcon(s),title:s.name,keyboard:true,riseOnHover:true}).addTo(map);
-    m.bindTooltip(short(s.name),{permanent:true,direction:"right",offset:[14,0],className:"nm"});
     m.on("click",function(){choose(s.id,false);});
     markers[s.id]=m;
   });
-  var pts=SHOPS.filter(function(s){return s.lat!=null;}).map(function(s){return [s.lat,s.lng];});
-  if(pts.length)map.fitBounds(pts,{padding:[50,50],maxZoom:10});
+  /* 店が多いので、ラベルは拡大したときだけ常時表示する */
+  function drawTips(){
+    var on=map.getZoom()>=11;
+    SHOPS.forEach(function(s){var m=markers[s.id];if(!m)return;
+      m.unbindTooltip();
+      m.bindTooltip(short(s.name),{permanent:on,direction:"right",offset:[14,0],className:"nm"});});
+  }
+  drawTips();
+  map.on("zoomend",drawTips);
   function refreshPins(){SHOPS.forEach(function(s){if(markers[s.id])markers[s.id].setIcon(pinIcon(s));});}
 
   /* ---------- detail ---------- */
@@ -180,7 +196,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   function drawDetail(){
     var s=SHOPS.filter(function(x){return x.id===sel;})[0];
     if(!s){detail.innerHTML='<h3>店の詳細</h3><p class="empty">地図のピンか、下のリストから店を選ぶと、ここに詳細が出ます。</p>';return;}
-    var q=encodeURIComponent((s.addr||s.name+" 長野県"));
+    var q=encodeURIComponent(s.addr||s.name);
     var posNote=s.pos==="town"?"ピンの位置は目安です。":s.pos==="city"?"住所が未確認のため、ピンは市の中心に仮置きしています。":"住所が未確認のため、地図にはまだ出していません。";
     var r=db.rating[s.id]||0, v=!!db.visited[s.id];
     var stars="";for(var i=1;i<=5;i++)stars+='<button type="button" data-star="'+i+'" class="'+(i<=r?'on':'')+'" aria-label="評価'+i+'" aria-pressed="'+(i===r)+'">★</button>';
