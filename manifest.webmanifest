@@ -1,0 +1,14 @@
+{
+  "name": "パソ二郎",
+  "short_name": "パソ二郎",
+  "description": "全国の二郎系ラーメン店マップ",
+  "start_url": "./",
+  "display": "standalone",
+  "lang": "ja",
+  "theme_color": "#F2C100",
+  "background_color": "#F2C100",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
