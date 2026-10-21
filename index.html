@@ -204,7 +204,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   function drawDetail(){
     var s=SHOPS.filter(function(x){return x.id===sel;})[0];
     if(!s){detail.innerHTML='<h3>店の詳細</h3><p class="empty">地図のピンか、下のリストから店を選ぶと、ここに詳細が出ます。</p>';return;}
-    var q=encodeURIComponent(s.addr||s.name);
+    var q=encodeURIComponent(s.name+" "+(s.addr||""));
     var posNote=s.pos==="town"?"ピンの位置は目安です。":s.pos==="city"?"住所が未確認のため、ピンは市の中心に仮置きしています。":"住所が未確認のため、地図にはまだ出していません。";
     var r=db.rating[s.id]||0, v=!!db.visited[s.id];
     var stars="";for(var i=1;i<=5;i++)stars+='<button type="button" data-star="'+i+'" class="'+(i<=r?'on':'')+'" aria-label="評価'+i+'" aria-pressed="'+(i===r)+'">★</button>';
