@@ -97,6 +97,22 @@ ul.list li + li{border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.bowl{animation-duration:5s}}
 #gpsmsg.busy{font-size:14px;font-weight:700;color:var(--ink)}
 .btn:disabled{opacity:.6;cursor:progress}
+/* みんなの感想 */
+.posts{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.posts h3{margin:0 0 8px}
+.post{padding:10px 0;border-top:1px solid var(--line)}
+.post:first-child{border-top:0}
+.post .who{font-size:12.5px;color:var(--mute);display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center}
+.post .who b{color:var(--ink)}
+.post p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.post img{display:block;max-width:100%;max-height:260px;margin-top:8px;border:1px solid var(--line);background:var(--bg)}
+.linkish{background:none;border:0;padding:2px 4px;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:12.5px;min-height:28px}
+.pform{margin-top:12px;display:grid;gap:8px}
+.pform input[type=text],.pform textarea{width:100%;padding:8px;background:var(--bg);border:1px solid var(--line)}
+.pform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.pform .prev img{display:block;max-height:140px;max-width:100%}
+.perr{color:var(--pin);font-size:13px}
+.pok{color:var(--ok);font-size:13px}
 </style>
 </head>
 <body>
@@ -161,6 +177,7 @@ ul.list li + li{border-top:1px solid var(--line)}
         <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、いまのところ長野県で試している段階です(独立系は該当する店がまだありません)。</p>
         <p>どんな店を載せるか、二郎度をどう付けているかは、<a href="criteria.html">掲載の基準</a>に書いています。直系店は本家なので、二郎度は一律5です。</p>
         <p>営業時間・定休日は、店舗一覧サイト、食べログ、各店の公式サイトの情報をもとにした目安です。「頃」や「曜日により異なる」と書かれた店は、営業中の判定に使えません。公式Xのリンクは、一覧サイトに載っていたアカウントです。</p>
+        <p>感想と写真の投稿のルールは、<a href="guidelines.html">投稿のルール</a>にあります。</p>
         <p>訪問チェックと評価は、このブラウザの中だけに保存されます。地図は © OpenStreetMap contributors。</p>
       </section>
     </div>
@@ -327,14 +344,169 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank" rel="noopener">Googleマップで開く</a>'+
       '<a class="linkbtn" href="'+(s.x?"https://x.com/"+encodeURIComponent(s.x):"https://x.com/search?f=user&q="+encodeURIComponent(s.name))+'" target="_blank" rel="noopener">'+(s.x?"公式Xを見る":"Xで店を探す")+'</a></div>'+
       '<div class="row"><span class="lbl">自分の評価</span><span class="stars">'+stars+'</span></div>'+
-      '<label class="lbl" for="memo" style="display:block;margin-top:10px">メモ</label>'+
+      '<label class="lbl" for="memo" style="display:block;margin-top:10px">自分用のメモ(この端末だけに保存)</label>'+
       '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea>'+
-      '<p class="note">'+posNote+'</p>';
+      '<p class="note">'+posNote+'</p>'+
+      '<div id="posts"></div>';
     var ta=document.getElementById("memo");ta.value=db.memo[s.id]||"";
     ta.addEventListener("input",function(){db.memo[s.id]=ta.value;save();});
     document.getElementById("vis").addEventListener("click",function(){db.visited[s.id]=!db.visited[s.id];save();refresh();});
     detail.querySelectorAll("[data-star]").forEach(function(b){b.addEventListener("click",function(){
       var n=+b.getAttribute("data-star");db.rating[s.id]=(db.rating[s.id]===n)?0:n;save();refresh();});});
+    mountPosts(s.id);
+  }
+
+  /* ---------- みんなの感想(コメントと写真) ---------- */
+  /* Supabase の「Project URL」と「anon public key」を入れると有効になる。空のあいだは、この欄は出ない */
+  var SB_URL="", SB_KEY="";
+  function sbCfg(){return window.PASO_SB||{url:SB_URL,key:SB_KEY};}
+  function sbOn(){var c=sbCfg();return !!(c.url&&c.key);}
+  function sbFetch(path,opt){
+    var c=sbCfg(),h={apikey:c.key,Authorization:"Bearer "+c.key},k;
+    opt=opt||{};
+    for(k in opt.headers)h[k]=opt.headers[k];
+    opt.headers=h;
+    return fetch(c.url+path,opt);
+  }
+  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:""}, postCache={}, drafts={};
+  try{var pr=localStorage.getItem(PK);if(pr){var pp=JSON.parse(pr);if(pp&&typeof pp==="object"){pdata.mine=pp.mine||{};pdata.reported=pp.reported||{};pdata.nick=pp.nick||"";}}}catch(e){}
+  function psave(){try{localStorage.setItem(PK,JSON.stringify(pdata));}catch(e){}}
+  function hex(a){return Array.prototype.map.call(new Uint8Array(a),function(x){return ("0"+x.toString(16)).slice(-2);}).join("");}
+  function sha256hex(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(hex);}
+  function newToken(){var a=new Uint8Array(24);crypto.getRandomValues(a);return hex(a);}
+  function newId(){
+    if(crypto.randomUUID)return crypto.randomUUID();
+    var a=new Uint8Array(16),h;crypto.getRandomValues(a);a[6]=a[6]&15|64;a[8]=a[8]&63|128;h=hex(a);
+    return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20);
+  }
+  /* 写真は端末で縮小してJPEGにし直す。このとき位置情報などのメタデータは消える */
+  function resizePhoto(file){
+    return new Promise(function(res,rej){
+      var img=new Image(),url=URL.createObjectURL(file);
+      img.onload=function(){
+        URL.revokeObjectURL(url);
+        var w=img.naturalWidth,h=img.naturalHeight,r=Math.min(1,1280/Math.max(w,h)),q=.82,c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(w*r));c.height=Math.max(1,Math.round(h*r));
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        (function go(){c.toBlob(function(b){
+          if(!b)return rej(new Error("photo"));
+          if(b.size>900*1024&&q>.4){q-=.14;return go();}
+          if(b.size>1000*1024)return rej(new Error("photo"));
+          res(b);},"image/jpeg",q);})();
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);rej(new Error("photo"));};
+      img.src=url;
+    });
+  }
+  function loadPosts(id){
+    return sbFetch("/rest/v1/posts?shop_id=eq."+encodeURIComponent(id)+"&select=id,nickname,body,photo_path,created_at&order=created_at.desc&limit=30")
+      .then(function(r){if(!r.ok)throw new Error("load");return r.json();})
+      .then(function(rows){postCache[id]=rows;return rows;});
+  }
+  function rpc(name,args){
+    return sbFetch("/rest/v1/rpc/"+name,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(args)})
+      .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"rpc");});return r.json().catch(function(){return null;});});
+  }
+  function fdate(s){var d=new Date(s);return isNaN(d)?"":d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate();}
+  function mountPosts(id){
+    var box=document.getElementById("posts");
+    if(!box||!sbOn())return;
+    box.className="posts";
+    box.innerHTML='<h3>みんなの感想</h3><div id="plist" aria-live="polite"></div>'+
+      '<form class="pform" id="pform" novalidate>'+
+      '<label class="lbl" for="pnick">ニックネーム(省略できます)</label>'+
+      '<input type="text" id="pnick" maxlength="20" autocomplete="off" placeholder="名無しの二郎">'+
+      '<label class="lbl" for="pbody">感想</label>'+
+      '<textarea id="pbody" maxlength="300" placeholder="コール、量、待ち時間など(300字まで)"></textarea>'+
+      '<div><label class="lbl" for="pphoto">写真(1枚)</label> <input type="file" id="pphoto" accept="image/*"></div>'+
+      '<div class="prev" id="pprev"></div>'+
+      '<div class="hp" aria-hidden="true"><input type="text" id="pweb" tabindex="-1" autocomplete="off"></div>'+
+      '<p class="note">投稿は、誰でも見られます。お店や人の迷惑になること、人の顔や個人情報が写った写真は、載せないでください。写真の位置情報は、投稿前にこの端末で取り除きます。通報が集まった投稿は、自動で非表示になります。詳しくは<a href="guidelines.html">投稿のルール</a>。</p>'+
+      '<div class="row" style="margin-top:0"><button type="submit" class="btn" id="psend">投稿する</button><span id="pmsg" role="status"></span></div>'+
+      '</form>';
+    var list=document.getElementById("plist"),form=document.getElementById("pform"),
+        nickEl=document.getElementById("pnick"),bodyEl=document.getElementById("pbody"),fileEl=document.getElementById("pphoto"),
+        prev=document.getElementById("pprev"),web=document.getElementById("pweb"),send=document.getElementById("psend"),msgEl=document.getElementById("pmsg"),
+        sending=false;
+    nickEl.value=pdata.nick||"";
+    bodyEl.value=drafts[id]||"";
+    bodyEl.addEventListener("input",function(){drafts[id]=bodyEl.value;});
+    function note(t,ok){msgEl.className=ok?"pok":"perr";msgEl.textContent=t||"";}
+    function render(rows){
+      list.textContent="";
+      var shown=(rows||[]).filter(function(p){return !pdata.reported[p.id];});
+      if(!shown.length){var e=document.createElement("p");e.className="empty";e.textContent="まだ感想がありません。最初の1件を書いてみませんか。";list.appendChild(e);return;}
+      shown.forEach(function(p){
+        var el=document.createElement("div"),who=document.createElement("div"),nm=document.createElement("b"),dt=document.createElement("span"),tx=document.createElement("p");
+        el.className="post";who.className="who";
+        nm.textContent=p.nickname;dt.textContent=fdate(p.created_at);
+        who.appendChild(nm);who.appendChild(dt);
+        var rp=document.createElement("button");rp.type="button";rp.className="linkish";rp.textContent="通報";
+        rp.addEventListener("click",function(){
+          if(!confirm("この投稿を通報しますか?\n通報が集まると、投稿は自動で非表示になります。"))return;
+          rpc("report_post",{p_id:p.id}).then(function(){pdata.reported[p.id]=1;psave();render(postCache[id]);note("通報しました。ありがとうございます。",true);},
+            function(err){note(err.message==="rate"?"通報が多すぎます。少し待ってからお試しください。":"通報できませんでした。",false);});
+        });
+        who.appendChild(rp);
+        if(pdata.mine[p.id]){
+          var dl=document.createElement("button");dl.type="button";dl.className="linkish";dl.textContent="削除";
+          dl.addEventListener("click",function(){
+            if(!confirm("自分の投稿を削除しますか?"))return;
+            rpc("delete_my_post",{p_id:p.id,p_token:pdata.mine[p.id]}).then(function(ok){
+              if(ok){delete pdata.mine[p.id];psave();}
+              return loadPosts(id).then(render);
+            }).catch(function(){note("削除できませんでした。",false);});
+          });
+          who.appendChild(dl);
+        }
+        tx.textContent=p.body;
+        el.appendChild(who);el.appendChild(tx);
+        if(p.photo_path){
+          var a=document.createElement("a"),im=document.createElement("img");
+          a.href=sbCfg().url+"/storage/v1/object/public/photos/"+p.photo_path;a.target="_blank";a.rel="noopener";
+          im.src=a.href;im.alt="投稿された写真";im.loading="lazy";
+          a.appendChild(im);el.appendChild(a);
+        }
+        list.appendChild(el);
+      });
+    }
+    if(postCache[id])render(postCache[id]);
+    else{list.textContent="読み込み中…";}
+    loadPosts(id).then(render,function(){list.textContent="感想を読み込めませんでした。";});
+    fileEl.addEventListener("change",function(){
+      prev.textContent="";
+      var f=fileEl.files[0];
+      if(!f)return;
+      var im=document.createElement("img"),u=URL.createObjectURL(f);
+      im.onload=function(){URL.revokeObjectURL(u);};im.src=u;im.alt="選んだ写真";prev.appendChild(im);
+    });
+    form.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(sending||web.value)return;
+      var body=bodyEl.value.trim(),nick=(nickEl.value.trim()||"名無しの二郎").slice(0,20),file=fileEl.files[0];
+      if(!body){note("感想を書いてください。",false);return;}
+      sending=true;send.disabled=true;note("");
+      msgEl.className="";msgEl.textContent=" 投稿しています…";
+      var pid=newId(),token=newToken();
+      var up=file?resizePhoto(file).then(function(blob){
+        return sbFetch("/storage/v1/object/photos/"+id+"/"+pid+".jpg",{method:"POST",headers:{"Content-Type":"image/jpeg","x-upsert":"false"},body:blob})
+          .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"photo");});return id+"/"+pid+".jpg";});
+      }):Promise.resolve(null);
+      up.then(function(path){
+        return sha256hex(token).then(function(th){
+          return sbFetch("/rest/v1/posts",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},
+            body:JSON.stringify({id:pid,shop_id:id,nickname:nick,body:body,photo_path:path,token_hash:th})});
+        });
+      }).then(function(r){
+        if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"post");});
+        pdata.mine[pid]=token;pdata.nick=nick;psave();
+        bodyEl.value="";drafts[id]="";fileEl.value="";prev.textContent="";
+        note("投稿しました。",true);
+        return loadPosts(id).then(render);
+      }).catch(function(err){
+        note(err.message==="rate"?"短い時間に投稿しすぎです。少し待ってからお試しください。":err.message==="photo"?"写真を送れませんでした。別の写真か、写真なしでお試しください。":"投稿できませんでした。時間をおいてお試しください。",false);
+      }).then(function(){sending=false;send.disabled=false;});
+    });
   }
 
   /* ---------- list ---------- */
