@@ -2016,5 +2016,401 @@
     "lat": 36.244884,
     "lng": 137.888824,
     "pos": "town"
+  },
+  {
+    "id": "butaking-kanjo",
+    "name": "ブタキング 札幌環状店",
+    "area": "札幌市東区",
+    "addr": "北海道札幌市東区伏古1条5丁目6-13",
+    "jiro": 2,
+    "memo": "ニンニク・アブラ・ヤサイ・カエシを増やせる。スープは豚骨味噌で、さっぱり目。野菜はもやしが中心。駐車場あり。",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌のおすすめ二郎系ラーメン10選(2026年6月)",
+        "u": "https://enomotoblog.link/sapporo-jirokei-10sen/"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.079922,
+    "lng": 141.391907,
+    "pos": "town"
+  },
+  {
+    "id": "shakariki",
+    "name": "らー麺 シャカリキ",
+    "area": "札幌市豊平区",
+    "addr": "北海道札幌市豊平区平岸2条3-2-22",
+    "jiro": 2,
+    "memo": "ヤサイ・アブラ・ニンニク・カエシは無料。豚骨と煮干しのスープ。柔らかめに茹でたオーション麺も選べる。駐車場4台。",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "火、第3水(祝日も休み)",
+    "sched": [
+      {
+        "d": "火",
+        "t": []
+      },
+      {
+        "d": "月水木金土日",
+        "t": [
+          "11:00-14:45",
+          "17:00-19:45"
+        ]
+      }
+    ],
+    "hnote": "第3水曜は休み。時間は掲載元より",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.040085,
+    "lng": 141.369858,
+    "pos": "town"
+  },
+  {
+    "id": "yamajiro",
+    "name": "山次郎",
+    "area": "札幌市北区",
+    "addr": "北海道札幌市北区北13条西4-1-5",
+    "jiro": 3,
+    "memo": "厚切りの豚(炙りに対応)。野菜はマシでもマシマシ並みの量という紹介。脂は多めだが重すぎないスープ。",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "塊の豚",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌のおすすめ二郎系ラーメン10選(2026年6月)",
+        "u": "https://enomotoblog.link/sapporo-jirokei-10sen/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.075897,
+    "lng": 141.347519,
+    "pos": "town"
+  },
+  {
+    "id": "tenjiro-hiragishi",
+    "name": "ラーメン天二郎 平岸本店",
+    "area": "札幌市豊平区",
+    "addr": "北海道札幌市豊平区平岸3条3-1-29",
+    "jiro": 3,
+    "memo": "極太麺。麺量はライト140g・小280g・大400gから選べる。野菜・ニンニク・アブラは無料でマシマシまで。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "量が多い"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌のおすすめ二郎系ラーメン10選(2026年6月)",
+        "u": "https://enomotoblog.link/sapporo-jirokei-10sen/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.039818,
+    "lng": 141.370132,
+    "pos": "town"
+  },
+  {
+    "id": "tera",
+    "name": "らーめん てら",
+    "area": "札幌市西区",
+    "addr": "北海道札幌市西区琴似1条1-3-8",
+    "jiro": 2,
+    "memo": "野菜・ニンニク・アブラ・カラメを無料でマシマシまで。非乳化のスープで、初心者にも勧められている。",
+    "feat": [
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌のおすすめ二郎系ラーメン10選(2026年6月)",
+        "u": "https://enomotoblog.link/sapporo-jirokei-10sen/"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.078621,
+    "lng": 141.308762,
+    "pos": "town"
+  },
+  {
+    "id": "rokugosha",
+    "name": "麓郷舎",
+    "area": "札幌市清田区",
+    "addr": "札幌市清田区北野7条1-7-1",
+    "jiro": 3,
+    "memo": "野菜・背脂・ニンニクは無料。炙りロースか炙りバラを選べる。醤油・塩・味噌から選べ、味噌が人気。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.025295,
+    "lng": 141.434036,
+    "pos": "town"
+  },
+  {
+    "id": "katsumoriken",
+    "name": "ラーメン勝盛軒",
+    "area": "札幌市北区",
+    "addr": "北海道札幌市北区新琴似7条13-5-22",
+    "jiro": 3,
+    "memo": "かなり太い麺。ヤサイ・アブラ・ニンニク・カエシを注文時に増やせる。味噌がメインの店。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.12141,
+    "lng": 141.315155,
+    "pos": "town"
+  },
+  {
+    "id": "ragichan",
+    "name": "ラギちゃんラーメン",
+    "area": "札幌市北区",
+    "addr": "札幌市北区北21条西4-2-7",
+    "jiro": 3,
+    "memo": "超極太のゴリラギ麺か縮れ極太を選べる。ヤサイ・アブラ・ニンニク・カラメは無料。麺300gまで無料。駐車場あり。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "量が多い"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.086727,
+    "lng": 141.344727,
+    "pos": "town"
+  },
+  {
+    "id": "butakin-susukino",
+    "name": "BUTAKIN すすきの店",
+    "area": "札幌市中央区",
+    "addr": "札幌市中央区南6条西4-5-33",
+    "jiro": 3,
+    "memo": "平打ちの極太麺。ヤサイ・ニンニク・アブラは無料でマシマシまで。乳化寄りの濃厚なスープ。朝6時まで営業という紹介。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "ニンニク",
+      "アブラ",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "札幌のおすすめ二郎系ラーメン10選(2026年6月)",
+        "u": "https://enomotoblog.link/sapporo-jirokei-10sen/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.053577,
+    "lng": 141.353058,
+    "pos": "town"
+  },
+  {
+    "id": "butaken",
+    "name": "札幌豚研究所",
+    "area": "札幌市豊平区",
+    "addr": "北海道札幌市豊平区西岡4条8丁目4-1",
+    "jiro": 3,
+    "memo": "極太麺と分厚い豚。ヤサイ・カラメを調整できる。濃厚な味噌。掲載元で所在区の表記が分かれている。",
+    "feat": [
+      "太麺",
+      "野菜増し",
+      "塊の豚",
+      "濃いスープ"
+    ],
+    "src": [
+      {
+        "t": "すすきのMAGAZINE 札幌の二郎系20選(2026年5月)",
+        "u": "https://susukino-magazine.com/sapporo-jirou/"
+      },
+      {
+        "t": "札幌市の二郎系ラーメン完全攻略(2025年8月)",
+        "u": "https://local-media.heteml.net/archives/36075"
+      }
+    ],
+    "closed": "不明",
+    "sched": [
+      {
+        "d": "月〜日",
+        "t": null
+      }
+    ],
+    "hnote": "営業時間は公式Xで確認してください",
+    "group": "二郎インスパイア",
+    "kind": "inspire",
+    "tel": "",
+    "lat": 43.009102,
+    "lng": 141.387085,
+    "pos": "town"
   }
 ]
