@@ -35,6 +35,11 @@ h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,42px);lin
 .sub{margin:0;font-weight:700;font-size:14px}
 .beta{margin:0;font-size:12.5px;width:100%}
 header.band a{color:inherit;font-weight:700}
+.rule{width:100%;margin:8px 0 0;padding:8px 12px;background:var(--panel);color:var(--ink);border:2px solid var(--ink);font-size:13px;line-height:1.55}
+.rule b{display:block;font-size:15px}
+.rule b::before{content:"✓ ";color:var(--ok)}
+.rule a{color:var(--focus);text-decoration:underline}
+.okb{display:inline-block;margin-right:6px;padding:0 6px;border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:12.5px}
 main{padding-block:16px 40px}
 .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:800px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -139,6 +144,7 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
     <h1>パソ二郎</h1>
     <p class="sub">全国の二郎系マップ(試作版)</p>
     <p class="beta">ラーメン二郎の公式アプリではありません。店の情報は検索で確認できたものだけを載せています。</p>
+    <p class="rule"><b>掲載基準を満たす店だけを載せています</b>出典が2つ以上、二郎系の特徴が3つ以上、営業の確認ができた店だけです(直系店は、ラーメン二郎の看板を掲げる営業中の店)。<a href="criteria.html">掲載の基準を見る</a></p>
     <p class="beta"><a id="galjump" href="#gallery" hidden>みんなの写真を見る ↓</a></p>
   </div>
 </header>
@@ -351,6 +357,15 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
 
   /* ---------- detail ---------- */
   var detail=document.getElementById("detail");
+  /* 掲載基準を満たしている根拠を、店ごとにデータから数えて出す */
+  function okBadge(s){
+    var a='<a href="criteria.html">掲載の基準</a>';
+    if(s.kind==="direct")return '<span class="okb">✓ 掲載基準を満たす店</span>ラーメン二郎の直系店(営業中) ・ '+a;
+    var n=(s.src||[]).length,f=(s.feat||[]).length;
+    if(s.exception)return '<span class="okb">✓ 例外として掲載</span>理由は下に書いています ・ '+a;
+    if(n>=2&&f>=3)return '<span class="okb">✓ 掲載基準を満たす店</span>出典'+n+'件 ・ 確認できた特徴'+f+'つ ・ '+a;
+    return a+'を確認中';
+  }
   function drawDetail(){
     var s=SHOPS.filter(function(x){return x.id===sel;})[0];
     if(!s){detail.innerHTML='<h3>店の詳細</h3><p class="empty">地図のピンか、下のリストから店を選ぶと、ここに詳細が出ます。</p>';return;}
@@ -362,6 +377,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     detail.innerHTML=
       '<div class="dhead"><h2>'+esc(s.name)+'</h2><a class="dphoto" id="dphoto" hidden></a></div>'+
       '<p class="meta">'+esc(s.group)+'</p>'+
+      '<p class="meta">'+okBadge(s)+'</p>'+
       '<p class="meta">'+(s.addr?esc(s.addr):"住所は未確認")+(s.tel?' ・ '+esc(s.tel):"")+'</p>'+
       (dd!=null?'<p class="meta">'+esc(base.n)+'から約'+dd.toFixed(1)+'km(直線)</p>':'')+
       '<p class="meta">いま: '+stText(s)+'</p>'+
