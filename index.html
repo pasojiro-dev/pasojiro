@@ -114,6 +114,13 @@ ul.list li + li{border-top:1px solid var(--line)}
 .gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
 .gal button{display:block;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:1/1;overflow:hidden}
 .gal img{display:block;width:100%;height:100%;object-fit:cover}
+.gal button{position:relative}
+.gal .lc{position:absolute;right:3px;bottom:3px;padding:0 5px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;font-weight:700;line-height:18px}
+.gal .lc[hidden]{display:none}
+.like{margin-top:8px;border:2px solid var(--ink);background:transparent;color:var(--ink);padding:2px 12px;min-height:36px;font-weight:700;cursor:pointer}
+.like[aria-pressed="true"]{border-color:var(--pin);color:var(--pin)}
+.like:disabled{opacity:.6;cursor:progress}
+#lblike{margin-top:6px}
 #galmore{margin-top:10px}
 dialog.lb{width:calc(100% - 24px);max-width:640px;padding:12px;border:2px solid var(--ink);background:var(--panel);color:var(--ink)}
 dialog.lb::backdrop{background:rgba(0,0,0,.65)}
@@ -176,6 +183,7 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
         <dialog class="lb" id="lb" aria-label="投稿された写真">
           <img id="lbimg" alt="">
           <p class="cap" id="lbcap"></p>
+          <div id="lblike"></div>
           <div class="acts">
             <button type="button" class="btn" id="lbgo">この店を見る</button>
             <button type="button" class="btn" id="lbx">閉じる</button>
@@ -434,8 +442,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     opt.headers=h;
     return fetch(c.url+path,opt);
   }
-  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:""}, postCache={}, drafts={}, pOpen={}, myOpen={};
-  try{var pr=localStorage.getItem(PK);if(pr){var pp=JSON.parse(pr);if(pp&&typeof pp==="object"){pdata.mine=pp.mine||{};pdata.reported=pp.reported||{};pdata.nick=pp.nick||"";}}}catch(e){}
+  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:"",liked:{},dev:""}, postCache={}, drafts={}, pOpen={}, myOpen={};
+  try{var pr=localStorage.getItem(PK);if(pr){var pp=JSON.parse(pr);if(pp&&typeof pp==="object"){pdata.mine=pp.mine||{};pdata.reported=pp.reported||{};pdata.nick=pp.nick||"";pdata.liked=pp.liked||{};pdata.dev=pp.dev||"";}}}catch(e){}
   function psave(){try{localStorage.setItem(PK,JSON.stringify(pdata));}catch(e){}}
   function hex(a){return Array.prototype.map.call(new Uint8Array(a),function(x){return ("0"+x.toString(16)).slice(-2);}).join("");}
   function sha256hex(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(hex);}
@@ -464,8 +472,17 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       img.src=url;
     });
   }
+  /* いいね!の列(like_count)がサーバーにまだ無いときは、いいね!なしで動く */
+  var LIKES=true;
+  function pfields(){return "id,nickname,body,photo_path,created_at"+(LIKES?",like_count":"");}
+  function getPosts(q){
+    return sbFetch("/rest/v1/posts?"+q()).then(function(r){
+      if(!r.ok&&LIKES){LIKES=false;return sbFetch("/rest/v1/posts?"+q());}
+      return r;
+    });
+  }
   function loadPosts(id){
-    return sbFetch("/rest/v1/posts?shop_id=eq."+encodeURIComponent(id)+"&select=id,nickname,body,photo_path,created_at&order=created_at.desc&limit=30")
+    return getPosts(function(){return "shop_id=eq."+encodeURIComponent(id)+"&select="+pfields()+"&order=created_at.desc&limit=30";})
       .then(function(r){if(!r.ok)throw new Error("load");return r.json();})
       .then(function(rows){postCache[id]=rows;return rows;});
   }
@@ -484,6 +501,28 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var im=document.createElement("img");
     im.src=u;im.alt="みんなが投稿した写真(いちばん新しい1枚)";
     a.href=u;a.target="_blank";a.rel="noopener";a.textContent="";a.appendChild(im);a.hidden=false;
+  }
+  /* 投稿写真への「いいね!」。1つの端末は、1つの写真に1回(もう一度押すと取り消し) */
+  function devId(){if(!pdata.dev||pdata.dev.length<16){pdata.dev=newToken();psave();}return pdata.dev;}
+  function likeBtn(p){
+    var b=document.createElement("button");b.type="button";b.className="like";
+    function paint(){var on=!!pdata.liked[p.id],n=p.like_count||0;
+      b.setAttribute("aria-pressed",String(on));b.textContent=(on?"♥ ":"♡ ")+n;
+      b.setAttribute("aria-label","この写真にいいね!(いま"+n+"件)"+(on?" 押すと取り消します":""));}
+    paint();
+    b.addEventListener("click",function(){
+      if(b.disabled)return;
+      var on=!pdata.liked[p.id];b.disabled=true;
+      rpc(on?"like_post":"unlike_post",{p_id:p.id,p_dev:devId()}).then(function(n){
+        if(on)pdata.liked[p.id]=true;else delete pdata.liked[p.id];psave();
+        if(typeof n==="number")p.like_count=n;
+        paint();
+      },function(e){
+        b.textContent=e.message==="rate"?"押しすぎです。少し待ってください":"送れませんでした";
+        setTimeout(paint,1800);
+      }).then(function(){b.disabled=false;});
+    });
+    return b;
   }
   var galReload=function(){};
   function mountPosts(id){
@@ -547,6 +586,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
           a.href=sbCfg().url+"/storage/v1/object/public/photos/"+p.photo_path;a.target="_blank";a.rel="noopener";
           im.src=a.href;im.alt="投稿された写真";im.loading="lazy";
           a.appendChild(im);el.appendChild(a);
+          if(LIKES)el.appendChild(likeBtn(p));
         }
         list.appendChild(el);
       });
@@ -682,7 +722,12 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
         gMore=document.getElementById("galmore"),lb=document.getElementById("lb"),lbImg=document.getElementById("lbimg"),
         lbCap=document.getElementById("lbcap"),lbShop=null,gCount=0;
     function photoUrl(path){return sbCfg().url+"/storage/v1/object/public/photos/"+path;}
-    function openPhoto(p,s){
+    function paintBadge(lc,p){var n=p.like_count||0;lc.textContent=n?"♥ "+n:"";lc.hidden=!n;}
+    var lbPost=null,lbBadge=null,lbLike=document.getElementById("lblike");
+    lb.addEventListener("close",function(){if(lbBadge&&lbPost)paintBadge(lbBadge,lbPost);});
+    function openPhoto(p,s,lc){
+      lbShop=s;lbPost=p;lbBadge=lc;
+      lbLike.textContent="";if(LIKES)lbLike.appendChild(likeBtn(p));
       lbShop=s;lbImg.src=photoUrl(p.photo_path);lbImg.alt=s.name+"の投稿写真";
       lbCap.textContent=s.name+" ・ "+p.nickname+" ・ "+fdate(p.created_at);
       if(lb.showModal)lb.showModal();else window.open(lbImg.src,"_blank","noopener");
@@ -696,7 +741,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     function loadGallery(){
       if(gbusy||gend)return;
       var my=gen;gbusy=true;gMore.disabled=true;gMsg.textContent="読み込み中…";
-      sbFetch("/rest/v1/posts?photo_path=not.is.null&select=id,shop_id,nickname,photo_path,created_at&order=created_at.desc&limit="+GN+"&offset="+goff)
+      getPosts(function(){return "photo_path=not.is.null&select=shop_id,"+pfields()+"&order=created_at.desc&limit="+GN+"&offset="+goff;})
         .then(function(r){if(!r.ok)throw new Error("gal");return r.json();})
         .then(function(rows){
           if(my!==gen)return;
@@ -707,7 +752,9 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
             var b=document.createElement("button"),im=document.createElement("img");
             b.type="button";b.setAttribute("aria-label",s.name+"の写真を大きく見る");
             im.src=photoUrl(p.photo_path);im.alt=s.name+"の投稿写真";im.loading="lazy";im.decoding="async";
-            b.appendChild(im);b.addEventListener("click",function(){openPhoto(p,s);});
+            b.appendChild(im);
+            var lc=document.createElement("span");lc.className="lc";b.appendChild(lc);paintBadge(lc,p);
+            b.addEventListener("click",function(){openPhoto(p,s,lc);});
             gGrid.appendChild(b);gCount++;
           });
           gMsg.textContent=gCount?"":"まだ写真がありません。店の詳細から、最初の1枚を投稿してみませんか。";

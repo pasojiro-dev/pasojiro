@@ -157,3 +157,53 @@ create policy paso_photos_insert on storage.objects for insert to anon
     and name ~ '^[a-z0-9-]{1,40}/[0-9a-f-]{36}\.jpg$'
     and public.upload_allowed()
   );
+
+-- ---------- 写真への「いいね!」(supabase/likes.sql と同じ内容) ----------
+alter table public.posts add column if not exists like_count int not null default 0;
+grant select (like_count) on public.posts to anon;
+
+create table if not exists public.likes (
+  post_id uuid not null references public.posts (id) on delete cascade,
+  dev_hash text not null,
+  created_at timestamptz not null default now(),
+  primary key (post_id, dev_hash)
+);
+alter table public.likes enable row level security;
+
+create or replace function public.like_post(p_id uuid, p_dev text) returns int
+language plpgsql security definer set search_path = public, extensions as $$
+declare h text; n int;
+begin
+  if p_dev is null or char_length(p_dev) < 16 or char_length(p_dev) > 64 then
+    raise exception 'bad_device';
+  end if;
+  perform public.check_rate('like', 20, 200);
+  h := encode(extensions.digest(p_dev || ':' || (select salt from public.app_secret where id = 1), 'sha256'), 'hex');
+  insert into public.likes (post_id, dev_hash) values (p_id, h) on conflict do nothing;
+  if found then
+    update public.posts set like_count = like_count + 1 where id = p_id;
+  end if;
+  select like_count into n from public.posts where id = p_id;
+  return coalesce(n, 0);
+end $$;
+revoke all on function public.like_post(uuid, text) from public;
+grant execute on function public.like_post(uuid, text) to anon;
+
+create or replace function public.unlike_post(p_id uuid, p_dev text) returns int
+language plpgsql security definer set search_path = public, extensions as $$
+declare h text; n int;
+begin
+  if p_dev is null or char_length(p_dev) < 16 or char_length(p_dev) > 64 then
+    raise exception 'bad_device';
+  end if;
+  perform public.check_rate('like', 20, 200);
+  h := encode(extensions.digest(p_dev || ':' || (select salt from public.app_secret where id = 1), 'sha256'), 'hex');
+  delete from public.likes where post_id = p_id and dev_hash = h;
+  if found then
+    update public.posts set like_count = greatest(like_count - 1, 0) where id = p_id;
+  end if;
+  select like_count into n from public.posts where id = p_id;
+  return coalesce(n, 0);
+end $$;
+revoke all on function public.unlike_post(uuid, text) from public;
+grant execute on function public.unlike_post(uuid, text) to anon;
