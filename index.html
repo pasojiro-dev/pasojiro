@@ -166,6 +166,21 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
     <div class="col">
       <section class="panel" id="detail" aria-live="polite"></section>
 
+      <section class="panel" id="gallery" hidden>
+        <h3>みんなの写真</h3>
+        <div class="gal" id="galgrid"></div>
+        <p class="note" id="galmsg" role="status"></p>
+        <button type="button" class="btn" id="galmore" hidden>もっと見る</button>
+        <dialog class="lb" id="lb" aria-label="投稿された写真">
+          <img id="lbimg" alt="">
+          <p class="cap" id="lbcap"></p>
+          <div class="acts">
+            <button type="button" class="btn" id="lbgo">この店を見る</button>
+            <button type="button" class="btn" id="lbx">閉じる</button>
+          </div>
+        </dialog>
+      </section>
+
       <section class="panel">
         <div class="ctrl">
           <button type="button" class="btn" id="gps">現在地を使う</button>
@@ -192,22 +207,17 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
         </div>
         <p class="note" id="gpsmsg" role="status" hidden></p>
         <p class="note" id="openmsg" hidden></p>
-        <div id="list"></div>
-      </section>
-
-      <section class="panel" id="gallery" hidden>
-        <h3>みんなの写真</h3>
-        <div class="gal" id="galgrid"></div>
-        <p class="note" id="galmsg" role="status"></p>
-        <button type="button" class="btn" id="galmore" hidden>もっと見る</button>
-        <dialog class="lb" id="lb" aria-label="投稿された写真">
-          <img id="lbimg" alt="">
-          <p class="cap" id="lbcap"></p>
-          <div class="acts">
-            <button type="button" class="btn" id="lbgo">この店を見る</button>
-            <button type="button" class="btn" id="lbx">閉じる</button>
+        <div class="ctrl" style="margin-top:10px">
+          <span style="font-size:13px;font-weight:700">近い順の表示件数</span>
+          <div class="seg" role="group" aria-label="近い順の表示件数">
+            <button type="button" data-n="10" aria-pressed="true">10件</button>
+            <button type="button" data-n="20" aria-pressed="false">20件</button>
+            <button type="button" data-n="30" aria-pressed="false">30件</button>
+            <button type="button" data-n="40" aria-pressed="false">40件</button>
+            <button type="button" data-n="50" aria-pressed="false">50件</button>
           </div>
-        </dialog>
+        </div>
+        <div id="list"></div>
       </section>
 
       <section class="panel about">
@@ -580,13 +590,17 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<span class="nm">'+esc(s.name)+'</span><span class="dist">'+(dd!=null?dd.toFixed(1)+' km':'—')+'</span>'+
       '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+stBadge(s)+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
   }
+  var LIMIT=10;
+  try{var ln=+localStorage.getItem("paso-jiro-n");if(ln>=10&&ln<=50&&ln%10===0)LIMIT=ln;}catch(e){}
   function drawList(){
     var arr=SHOPS.filter(function(s){return visible(s)&&(filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]));});
     var placed=arr.filter(function(s){return s.lat!=null;}).sort(function(a,b){return dist(a)-dist(b);});
     var un=arr.filter(function(s){return s.lat==null;});
     var h="";
     if(!arr.length)h='<p class="empty" style="margin-top:12px">この条件の店はまだありません。</p>';
-    if(placed.length)h+='<div class="sect">近い順('+esc(base.n)+'から)</div><ul class="list">'+placed.map(item).join("")+'</ul>';
+    var top=placed.slice(0,LIMIT);
+    if(placed.length)h+='<div class="sect">近い順('+esc(base.n)+'から) '+top.length+'/'+placed.length+'件</div><ul class="list">'+top.map(item).join("")+'</ul>'+
+      (placed.length>top.length?'<p class="note">近い順に'+top.length+'件を表示しています。上の件数のタブで、最大50件まで増やせます。地図のピンからは、すべての店を選べます。</p>':'');
     if(un.length)h+='<div class="sect">場所を調べ中の店</div><ul class="list">'+un.map(item).join("")+'</ul>';
     listEl.innerHTML=h;
     listEl.querySelectorAll(".item").forEach(function(b){b.addEventListener("click",function(){choose(b.getAttribute("data-id"),true);});});
@@ -646,6 +660,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   }
   segment("data-f",function(v){filter=v;drawList();});
   segment("data-k",function(v){kind=v;refresh();});
+  segment("data-n",function(v){LIMIT=+v;try{localStorage.setItem("paso-jiro-n",String(LIMIT));}catch(e){}drawList();});
+  document.querySelectorAll(".seg button[data-n]").forEach(function(b){b.setAttribute("aria-pressed",String(+b.getAttribute("data-n")===LIMIT));});
   var openBtn=document.getElementById("openonly");
   openBtn.addEventListener("click",function(){onlyOpen=!onlyOpen;openBtn.setAttribute("aria-pressed",String(onlyOpen));refresh();});
   setInterval(function(){if(onlyOpen){showKind();updateOpenMsg();}drawList();},60000);
