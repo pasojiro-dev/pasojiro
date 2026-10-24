@@ -358,7 +358,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
 
   /* ---------- みんなの感想(コメントと写真) ---------- */
   /* Supabase の「Project URL」と「anon public key」を入れると有効になる。空のあいだは、この欄は出ない */
-  var SB_URL="", SB_KEY="";
+  var SB_URL="https://vzssnalpprntydcqybwi.supabase.co", SB_KEY="sb_publishable_Dn1NVT5_BvnJjDAUmPTSaQ_G9crMmk0";
   function sbCfg(){return window.PASO_SB||{url:SB_URL,key:SB_KEY};}
   function sbOn(){var c=sbCfg();return !!(c.url&&c.key);}
   function sbFetch(path,opt){
