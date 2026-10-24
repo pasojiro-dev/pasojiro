@@ -122,7 +122,9 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
 .lb .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 /* みんなの感想 */
 .posts{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
-.posts h3{margin:0 0 8px}
+.fold summary{cursor:pointer;min-height:40px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--mute)}
+.fold summary .fstat{font-weight:400;letter-spacing:0}
+.fold[open] summary{margin-bottom:8px}
 .post{padding:10px 0;border-top:1px solid var(--line)}
 .post:first-child{border-top:0}
 .post .who{font-size:12.5px;color:var(--mute);display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center}
@@ -207,6 +209,7 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
         </div>
         <p class="note" id="gpsmsg" role="status" hidden></p>
         <p class="note" id="openmsg" hidden></p>
+        <p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。行く前に、店の公式Xなどで最新の情報を確認してください。</p>
         <div class="ctrl" style="margin-top:10px">
           <span style="font-size:13px;font-weight:700">近い順の表示件数</span>
           <div class="seg" role="group" aria-label="近い順の表示件数">
@@ -376,6 +379,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     if(n>=2&&f>=3)return '<span class="okb">✓ 掲載基準を満たす店</span>出典'+n+'件 ・ 確認できた特徴'+f+'つ ・ '+a;
     return a+'を確認中';
   }
+  /* 全店に共通の注意(営業時間は変わる、公式Xで確認)だけの補足は、店ごとには出さない。共通の注意は、近い順の箱に1回だけ書く */
+  var GENERIC_HNOTE=/^営業時間(・定休日)?は(変わることがあります。?)?(公式Xで確認してください)?。?$/;
   function drawDetail(){
     var s=SHOPS.filter(function(x){return x.id===sel;})[0];
     if(!s){detail.innerHTML='<h3>店の詳細</h3><p class="empty">地図のピンか、下のリストから店を選ぶと、ここに詳細が出ます。</p>';return;}
@@ -393,21 +398,22 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<p class="meta">いま: '+stText(s)+'</p>'+
       hoursHtml(s)+
       (s.closed?'<p class="meta">定休日: '+esc(s.closed)+'</p>':'')+
-      (s.hnote?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
+      (s.hnote&&!GENERIC_HNOTE.test(s.hnote)?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
       (s.feat?'<p class="meta">確認できた特徴: '+s.feat.map(esc).join("・")+'</p>':'')+
       (s.exception?'<p class="meta">掲載の理由: '+esc(s.exception)+'</p>':'')+
       (s.src&&s.src.length?'<p class="meta">出典: '+s.src.map(function(x){return '<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.t)+'</a>';}).join(" / ")+'</p>':'')+
-      '<p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。最新の情報は店の公式Xなどで確認してください。</p>'+
       '<div class="row"><span class="lbl">二郎度(仮)</span>'+meter(s.jiro)+'<span class="meta">'+s.jiro+' / 5</span></div>'+
       '<p class="note">'+esc(s.memo)+'</p>'+
       '<div class="row"><button type="button" class="btn" id="vis" aria-pressed="'+v+'">'+(v?"✓ 行った":"行った店にする")+'</button>'+
       '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank" rel="noopener">Googleマップで開く</a>'+
       '<a class="linkbtn" href="'+(s.x?"https://x.com/"+encodeURIComponent(s.x):"https://x.com/search?f=user&q="+encodeURIComponent(s.name))+'" target="_blank" rel="noopener">'+(s.x?"公式Xを見る":"Xで店を探す")+'</a></div>'+
+      '<details class="fold" id="mydet" style="margin-top:10px"'+(myOpen[s.id]?' open':'')+'><summary>自分の評価とメモ <span class="fstat">('+(r?'★'+r:'未評価')+(db.memo[s.id]?' ・ メモあり':'')+')</span></summary>'+
       '<div class="row"><span class="lbl">自分の評価</span><span class="stars">'+stars+'</span></div>'+
       '<label class="lbl" for="memo" style="display:block;margin-top:10px">自分用のメモ(この端末だけに保存)</label>'+
-      '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea>'+
+      '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea></details>'+
       '<p class="note">'+posNote+'</p>'+
       '<div id="posts"></div>';
+    document.getElementById("mydet").addEventListener("toggle",function(){myOpen[s.id]=this.open;});
     var ta=document.getElementById("memo");ta.value=db.memo[s.id]||"";
     ta.addEventListener("input",function(){db.memo[s.id]=ta.value;save();});
     document.getElementById("vis").addEventListener("click",function(){db.visited[s.id]=!db.visited[s.id];save();refresh();});
@@ -428,7 +434,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     opt.headers=h;
     return fetch(c.url+path,opt);
   }
-  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:""}, postCache={}, drafts={};
+  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:""}, postCache={}, drafts={}, pOpen={}, myOpen={};
   try{var pr=localStorage.getItem(PK);if(pr){var pp=JSON.parse(pr);if(pp&&typeof pp==="object"){pdata.mine=pp.mine||{};pdata.reported=pp.reported||{};pdata.nick=pp.nick||"";}}}catch(e){}
   function psave(){try{localStorage.setItem(PK,JSON.stringify(pdata));}catch(e){}}
   function hex(a){return Array.prototype.map.call(new Uint8Array(a),function(x){return ("0"+x.toString(16)).slice(-2);}).join("");}
@@ -484,7 +490,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var box=document.getElementById("posts");
     if(!box||!sbOn())return;
     box.className="posts";
-    box.innerHTML='<h3>みんなの感想</h3><div id="plist" aria-live="polite"></div>'+
+    box.innerHTML='<details class="fold" id="pdet"'+(pOpen[id]||drafts[id]?' open':'')+'><summary>みんなの感想・写真を投稿する <span class="fstat" id="pcount"></span></summary><div id="plist" aria-live="polite"></div>'+
       '<form class="pform" id="pform" novalidate>'+
       '<label class="lbl" for="pnick">ニックネーム(省略できます)</label>'+
       '<input type="text" id="pnick" maxlength="20" autocomplete="off" placeholder="名無しの二郎">'+
@@ -495,7 +501,8 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<div class="hp" aria-hidden="true"><input type="text" id="pweb" tabindex="-1" autocomplete="off"></div>'+
       '<p class="note">投稿は、誰でも見られます。お店や人の迷惑になること、人の顔や個人情報が写った写真は、載せないでください。写真の位置情報は、投稿前にこの端末で取り除きます。通報が集まった投稿は、自動で非表示になります。詳しくは<a href="guidelines.html">投稿のルール</a>。</p>'+
       '<div class="row" style="margin-top:0"><button type="submit" class="btn" id="psend">投稿する</button><span id="pmsg" role="status"></span></div>'+
-      '</form>';
+      '</form></details>';
+    document.getElementById("pdet").addEventListener("toggle",function(){pOpen[id]=this.open;});
     var list=document.getElementById("plist"),form=document.getElementById("pform"),
         nickEl=document.getElementById("pnick"),bodyEl=document.getElementById("pbody"),fileEl=document.getElementById("pphoto"),
         prev=document.getElementById("pprev"),web=document.getElementById("pweb"),send=document.getElementById("psend"),msgEl=document.getElementById("pmsg"),
@@ -508,6 +515,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       list.textContent="";
       var shown=(rows||[]).filter(function(p){return !pdata.reported[p.id];});
       headPhoto(shown);
+      document.getElementById("pcount").textContent=shown.length?"("+shown.length+"件)":"(まだありません)";
       if(!shown.length){var e=document.createElement("p");e.className="empty";e.textContent="まだ感想がありません。最初の1件を書いてみませんか。";list.appendChild(e);return;}
       shown.forEach(function(p){
         var el=document.createElement("div"),who=document.createElement("div"),nm=document.createElement("b"),dt=document.createElement("span"),tx=document.createElement("p");
