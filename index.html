@@ -154,7 +154,7 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
     <p class="sub">全国の二郎系マップ(試作版)</p>
     <p class="beta">ラーメン二郎の公式アプリではありません。店の情報は検索で確認できたものだけを載せています。</p>
     <p class="rule"><b>掲載基準を満たす店だけを載せています</b>出典が2つ以上、二郎系の特徴が3つ以上、営業の確認ができた店だけです(直系店は、ラーメン二郎の看板を掲げる営業中の店)。<a href="criteria.html">掲載の基準を見る</a></p>
-    <p class="beta"><a id="galjump" href="#gallery" hidden>みんなの写真を見る ↓</a></p>
+    <p class="beta"><a id="galjump" href="#gallery" hidden>みんなの写真を見る ↓</a> <a id="reqjump" href="#reqpanel" hidden>店の追加をリクエスト ↓</a></p>
   </div>
 </header>
 
@@ -229,6 +229,26 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
           </div>
         </div>
         <div id="list"></div>
+      </section>
+
+      <section class="panel" id="reqpanel" hidden>
+        <details class="fold" id="reqdet">
+          <summary>店の追加をリクエストする</summary>
+          <p class="note" style="margin-top:0">載っていない二郎系の店があれば、教えてください。<a href="criteria.html">掲載の基準</a>を満たす店だけを、確認してから追加します(すぐには載りません)。</p>
+          <form class="pform" id="reqform" novalidate>
+            <label class="lbl" for="rqname">店名(必須)</label>
+            <input type="text" id="rqname" maxlength="60" autocomplete="off">
+            <label class="lbl" for="rqplace">場所(必須・住所、または市区町村と最寄り駅)</label>
+            <input type="text" id="rqplace" maxlength="120" autocomplete="off">
+            <label class="lbl" for="rqurl">参考のページ(食べログ・公式サイトなど。分かれば)</label>
+            <input type="text" id="rqurl" maxlength="300" inputmode="url" autocomplete="off" placeholder="https://">
+            <label class="lbl" for="rqnote">ひとこと(任意)</label>
+            <textarea id="rqnote" maxlength="300" placeholder="二郎系だと分かる理由など(300字まで)"></textarea>
+            <div class="hp" aria-hidden="true"><input type="text" id="rqweb" tabindex="-1" autocomplete="off"></div>
+            <p class="note">連絡先などの個人情報は書かないでください。送った内容は、運営だけが見ます。返信はできません。</p>
+            <div class="row" style="margin-top:0"><button type="submit" class="btn" id="rqsend">リクエストを送る</button><span id="rqmsg" role="status"></span></div>
+          </form>
+        </details>
       </section>
 
       <section class="panel about">
@@ -766,6 +786,47 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     galReload=function(){gen++;goff=0;gend=false;gbusy=false;gCount=0;gGrid.textContent="";loadGallery();};
     gMore.addEventListener("click",loadGallery);
     gal.hidden=false;document.getElementById("galjump").hidden=false;loadGallery();
+  }
+
+  /* ---------- 店の追加リクエスト: 運営だけが読める表に送る ---------- */
+  if(sbOn()){
+    var rqPanel=document.getElementById("reqpanel"),rqForm=document.getElementById("reqform"),rqMsg=document.getElementById("rqmsg"),
+        rqSend=document.getElementById("rqsend"),rqSending=false,RQK="paso-jiro-req-last";
+    function rqNote(t,ok){rqMsg.className=ok?"pok":"perr";rqMsg.textContent=t||"";}
+    function norm(t){return String(t||"").replace(/[\s　・･\-－ー()（）「」『』]/g,"").toLowerCase();}
+    function alreadyListed(name,place){
+      var n=norm(name),pl=norm(place);if(!n)return null;
+      return SHOPS.filter(function(s){return norm(s.name)===n&&(pl.length<2||norm(s.addr||"").indexOf(pl)>=0||pl.indexOf(norm(s.area||"x"))>=0);})[0]||null;
+    }
+    rqForm.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(rqSending)return;
+      if(document.getElementById("rqweb").value)return;
+      var name=document.getElementById("rqname").value.trim(),place=document.getElementById("rqplace").value.trim(),
+          url=document.getElementById("rqurl").value.trim(),note=document.getElementById("rqnote").value.trim();
+      if(!name){rqNote("店名を書いてください。",false);return;}
+      if(!place){rqNote("場所(住所、または市区町村と最寄り駅)を書いてください。",false);return;}
+      if(url&&!/^https?:\/\/\S+$/i.test(url)){rqNote("参考のページは、https:// で始まるアドレスにしてください。わからなければ空でも大丈夫です。",false);return;}
+      var dup=alreadyListed(name,place);
+      if(dup){rqNote("「"+dup.name+"」は、すでに載っています(地図や近い順のリストで探せます)。",false);return;}
+      try{var last=+localStorage.getItem(RQK)||0;if(Date.now()-last<20000){rqNote("続けて送れません。少し待ってください。",false);return;}}catch(x){}
+      rqSending=true;rqSend.disabled=true;rqNote("送っています…",true);
+      sbFetch("/rest/v1/shop_requests",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},
+        body:JSON.stringify({name:name,place:place,url:url||null,note:note||null})})
+        .then(function(r){
+          if(r.ok){
+            try{localStorage.setItem(RQK,String(Date.now()));}catch(x){}
+            rqForm.reset();rqNote("送りました。ありがとうございます。掲載の基準を満たすか確認して、追加します。",true);return;
+          }
+          return r.text().then(function(t){
+            rqNote(/rate_limited/.test(t)?"短い時間に送りすぎです。少し待ってからお試しください。":
+                   /PGRST205|schema cache|does not exist/.test(t)?"いまはリクエストを受け付けていません。":"送れませんでした。内容を見直して、もう一度お試しください。",false);
+          });
+        })
+        .catch(function(){rqNote("送れませんでした。通信を確認して、もう一度お試しください。",false);})
+        .then(function(){rqSending=false;rqSend.disabled=false;});
+    });
+    rqPanel.hidden=false;document.getElementById("reqjump").hidden=false;
   }
 
   refresh();

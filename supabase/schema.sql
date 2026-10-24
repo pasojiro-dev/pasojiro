@@ -207,3 +207,33 @@ begin
 end $$;
 revoke all on function public.unlike_post(uuid, text) from public;
 grant execute on function public.unlike_post(uuid, text) to anon;
+
+-- ---------- 店の追加リクエスト(supabase/requests.sql と同じ内容) ----------
+create table if not exists public.shop_requests (
+  id uuid primary key default gen_random_uuid(),
+  name text not null check (char_length(name) between 1 and 60),
+  place text not null check (char_length(place) between 1 and 120),
+  url text check (url is null or (char_length(url) <= 300 and url ~* '^https?://')),
+  note text check (note is null or char_length(note) <= 300),
+  status text not null default 'new',
+  created_at timestamptz not null default now()
+);
+alter table public.shop_requests enable row level security;
+
+drop policy if exists shop_requests_insert on public.shop_requests;
+create policy shop_requests_insert on public.shop_requests for insert to anon with check (true);
+
+revoke all on public.shop_requests from anon, authenticated;
+grant insert (name, place, url, note) on public.shop_requests to anon;
+
+create or replace function public.shop_requests_before_insert() returns trigger
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  perform public.check_rate('request', 3, 10);
+  new.status := 'new';
+  new.created_at := now();
+  return new;
+end $$;
+drop trigger if exists shop_requests_before_insert on public.shop_requests;
+create trigger shop_requests_before_insert before insert on public.shop_requests
+  for each row execute function public.shop_requests_before_insert();
