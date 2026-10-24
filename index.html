@@ -34,6 +34,7 @@ header.band .inner{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px
 h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,42px);line-height:1.1;margin:0}
 .sub{margin:0;font-weight:700;font-size:14px}
 .beta{margin:0;font-size:12.5px;width:100%}
+header.band a{color:inherit;font-weight:700}
 main{padding-block:16px 40px}
 .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:800px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -103,6 +104,17 @@ ul.list li + li{border-top:1px solid var(--line)}
 .dphoto{flex:none}
 .dphoto img{display:block;width:72px;height:72px;object-fit:cover;border:1px solid var(--line);background:var(--bg)}
 .dphoto[hidden]{display:none}
+/* みんなの写真(これまでに投稿された写真の一覧) */
+.panel[hidden]{display:none}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+.gal button{display:block;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:1/1;overflow:hidden}
+.gal img{display:block;width:100%;height:100%;object-fit:cover}
+#galmore{margin-top:10px}
+dialog.lb{width:calc(100% - 24px);max-width:640px;padding:12px;border:2px solid var(--ink);background:var(--panel);color:var(--ink)}
+dialog.lb::backdrop{background:rgba(0,0,0,.65)}
+.lb img{display:block;max-width:100%;max-height:68vh;margin:0 auto;background:var(--bg)}
+.lb .cap{margin:8px 0 0;font-size:13px;overflow-wrap:anywhere}
+.lb .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
 /* みんなの感想 */
 .posts{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
 .posts h3{margin:0 0 8px}
@@ -127,6 +139,7 @@ ul.list li + li{border-top:1px solid var(--line)}
     <h1>パソ二郎</h1>
     <p class="sub">全国の二郎系マップ(試作版)</p>
     <p class="beta">ラーメン二郎の公式アプリではありません。店の情報は検索で確認できたものだけを載せています。</p>
+    <p class="beta"><a id="galjump" href="#gallery" hidden>みんなの写真を見る ↓</a></p>
   </div>
 </header>
 
@@ -176,11 +189,26 @@ ul.list li + li{border-top:1px solid var(--line)}
         <div id="list"></div>
       </section>
 
+      <section class="panel" id="gallery" hidden>
+        <h3>みんなの写真</h3>
+        <div class="gal" id="galgrid"></div>
+        <p class="note" id="galmsg" role="status"></p>
+        <button type="button" class="btn" id="galmore" hidden>もっと見る</button>
+        <dialog class="lb" id="lb" aria-label="投稿された写真">
+          <img id="lbimg" alt="">
+          <p class="cap" id="lbcap"></p>
+          <div class="acts">
+            <button type="button" class="btn" id="lbgo">この店を見る</button>
+            <button type="button" class="btn" id="lbx">閉じる</button>
+          </div>
+        </dialog>
+      </section>
+
       <section class="panel about">
         <h3>このデータについて</h3>
         <p>二郎度(1〜5)は、口コミにある麺の太さ、野菜の盛り、スープの濃さなどから付けた仮の値です。5が本家級です。</p>
         <p>ピンの位置は住所や駅からの距離をもとにした目安です。行く前に「Googleマップで開く」で確認してください。</p>
-        <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、いまのところ長野県で試している段階です(独立系は該当する店がまだありません)。</p>
+        <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、北海道・東北・関東などから順に、確認できた店を少しずつ追加しています(独立系は該当する店がまだありません)。</p>
         <p>どんな店を載せるか、二郎度をどう付けているかは、<a href="criteria.html">掲載の基準</a>に書いています。直系店は本家なので、二郎度は一律5です。</p>
         <p>営業時間・定休日は、店舗一覧サイト、食べログ、各店の公式サイトの情報をもとにした目安です。「頃」や「曜日により異なる」と書かれた店は、営業中の判定に使えません。公式Xのリンクは、一覧サイトに載っていたアカウントです。</p>
         <p>感想と写真の投稿のルールは、<a href="guidelines.html">投稿のルール</a>にあります。</p>
@@ -425,6 +453,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     im.src=u;im.alt="みんなが投稿した写真(いちばん新しい1枚)";
     a.href=u;a.target="_blank";a.rel="noopener";a.textContent="";a.appendChild(im);a.hidden=false;
   }
+  var galReload=function(){};
   function mountPosts(id){
     var box=document.getElementById("posts");
     if(!box||!sbOn())return;
@@ -472,7 +501,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
             if(!confirm("自分の投稿を削除しますか?"))return;
             rpc("delete_my_post",{p_id:p.id,p_token:pdata.mine[p.id]}).then(function(ok){
               if(ok){delete pdata.mine[p.id];psave();}
-              return loadPosts(id).then(render);
+              return loadPosts(id).then(render).then(function(){galReload();});
             }).catch(function(){note("削除できませんでした。",false);});
           });
           who.appendChild(dl);
@@ -520,7 +549,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
         pdata.mine[pid]=token;pdata.nick=nick;psave();
         bodyEl.value="";drafts[id]="";fileEl.value="";prev.textContent="";
         note("投稿しました。",true);
-        return loadPosts(id).then(render);
+        return loadPosts(id).then(render).then(function(){galReload();});
       }).catch(function(err){
         note(err.message==="rate"?"短い時間に投稿しすぎです。少し待ってからお試しください。":err.message==="photo"?"写真を送れませんでした。別の写真か、写真なしでお試しください。":"投稿できませんでした。時間をおいてお試しください。",false);
       }).then(function(){sending=false;send.disabled=false;});
@@ -604,6 +633,53 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   var openBtn=document.getElementById("openonly");
   openBtn.addEventListener("click",function(){onlyOpen=!onlyOpen;openBtn.setAttribute("aria-pressed",String(onlyOpen));refresh();});
   setInterval(function(){if(onlyOpen){showKind();updateOpenMsg();}drawList();},60000);
+
+  /* ---------- みんなの写真: これまでに投稿された写真を、新しい順に一覧で見る ---------- */
+  if(sbOn()){
+    var GN=24,goff=0,gbusy=false,gend=false,gen=0,shopById={};
+    SHOPS.forEach(function(s){shopById[s.id]=s;});
+    var gal=document.getElementById("gallery"),gGrid=document.getElementById("galgrid"),gMsg=document.getElementById("galmsg"),
+        gMore=document.getElementById("galmore"),lb=document.getElementById("lb"),lbImg=document.getElementById("lbimg"),
+        lbCap=document.getElementById("lbcap"),lbShop=null,gCount=0;
+    function photoUrl(path){return sbCfg().url+"/storage/v1/object/public/photos/"+path;}
+    function openPhoto(p,s){
+      lbShop=s;lbImg.src=photoUrl(p.photo_path);lbImg.alt=s.name+"の投稿写真";
+      lbCap.textContent=s.name+" ・ "+p.nickname+" ・ "+fdate(p.created_at);
+      if(lb.showModal)lb.showModal();else window.open(lbImg.src,"_blank","noopener");
+    }
+    document.getElementById("lbx").addEventListener("click",function(){lb.close();});
+    document.getElementById("lbgo").addEventListener("click",function(){
+      lb.close();
+      if(lbShop){choose(lbShop.id,true);document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"start"});}
+    });
+    lb.addEventListener("click",function(e){if(e.target===lb)lb.close();});
+    function loadGallery(){
+      if(gbusy||gend)return;
+      var my=gen;gbusy=true;gMore.disabled=true;gMsg.textContent="読み込み中…";
+      sbFetch("/rest/v1/posts?photo_path=not.is.null&select=id,shop_id,nickname,photo_path,created_at&order=created_at.desc&limit="+GN+"&offset="+goff)
+        .then(function(r){if(!r.ok)throw new Error("gal");return r.json();})
+        .then(function(rows){
+          if(my!==gen)return;
+          goff+=rows.length;if(rows.length<GN)gend=true;
+          rows.forEach(function(p){
+            var s=shopById[p.shop_id];
+            if(!s||pdata.reported[p.id])return;
+            var b=document.createElement("button"),im=document.createElement("img");
+            b.type="button";b.setAttribute("aria-label",s.name+"の写真を大きく見る");
+            im.src=photoUrl(p.photo_path);im.alt=s.name+"の投稿写真";im.loading="lazy";im.decoding="async";
+            b.appendChild(im);b.addEventListener("click",function(){openPhoto(p,s);});
+            gGrid.appendChild(b);gCount++;
+          });
+          gMsg.textContent=gCount?"":"まだ写真がありません。店の詳細から、最初の1枚を投稿してみませんか。";
+          gMore.hidden=gend;
+        })
+        .catch(function(){if(my===gen)gMsg.textContent="写真を読み込めませんでした。時間をおいて、ページを再読み込みしてください。";})
+        .then(function(){if(my===gen){gbusy=false;gMore.disabled=false;}});
+    }
+    galReload=function(){gen++;goff=0;gend=false;gbusy=false;gCount=0;gGrid.textContent="";loadGallery();};
+    gMore.addEventListener("click",loadGallery);
+    gal.hidden=false;document.getElementById("galjump").hidden=false;loadGallery();
+  }
 
   refresh();
 }, function(){
