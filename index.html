@@ -97,6 +97,12 @@ ul.list li + li{border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.bowl{animation-duration:5s}}
 #gpsmsg.busy{font-size:14px;font-weight:700;color:var(--ink)}
 .btn:disabled{opacity:.6;cursor:progress}
+/* 店名の右に出す、投稿された写真 */
+.dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dhead h2{min-width:0;overflow-wrap:anywhere}
+.dphoto{flex:none}
+.dphoto img{display:block;width:72px;height:72px;object-fit:cover;border:1px solid var(--line);background:var(--bg)}
+.dphoto[hidden]{display:none}
 /* みんなの感想 */
 .posts{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
 .posts h3{margin:0 0 8px}
@@ -326,7 +332,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var stars="";for(var i=1;i<=5;i++)stars+='<button type="button" data-star="'+i+'" class="'+(i<=r?'on':'')+'" aria-label="評価'+i+'" aria-pressed="'+(i===r)+'">★</button>';
     var dd=dist(s);
     detail.innerHTML=
-      '<h2>'+esc(s.name)+'</h2>'+
+      '<div class="dhead"><h2>'+esc(s.name)+'</h2><a class="dphoto" id="dphoto" hidden></a></div>'+
       '<p class="meta">'+esc(s.group)+'</p>'+
       '<p class="meta">'+(s.addr?esc(s.addr):"住所は未確認")+(s.tel?' ・ '+esc(s.tel):"")+'</p>'+
       (dd!=null?'<p class="meta">'+esc(base.n)+'から約'+dd.toFixed(1)+'km(直線)</p>':'')+
@@ -408,6 +414,17 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"rpc");});return r.json().catch(function(){return null;});});
   }
   function fdate(s){var d=new Date(s);return isNaN(d)?"":d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate();}
+  /* 店名の右に、いちばん新しい投稿写真を1枚出す(写真つきの投稿がなければ出さない) */
+  function headPhoto(rows){
+    var a=document.getElementById("dphoto");if(!a)return;
+    var p=null;(rows||[]).some(function(x){if(x.photo_path){p=x;return true;}return false;});
+    if(!p){a.hidden=true;a.textContent="";return;}
+    var u=sbCfg().url+"/storage/v1/object/public/photos/"+p.photo_path,old=a.firstChild;
+    if(old&&old.src===u){a.hidden=false;return;}
+    var im=document.createElement("img");
+    im.src=u;im.alt="みんなが投稿した写真(いちばん新しい1枚)";
+    a.href=u;a.target="_blank";a.rel="noopener";a.textContent="";a.appendChild(im);a.hidden=false;
+  }
   function mountPosts(id){
     var box=document.getElementById("posts");
     if(!box||!sbOn())return;
@@ -435,6 +452,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     function render(rows){
       list.textContent="";
       var shown=(rows||[]).filter(function(p){return !pdata.reported[p.id];});
+      headPhoto(shown);
       if(!shown.length){var e=document.createElement("p");e.className="empty";e.textContent="まだ感想がありません。最初の1件を書いてみませんか。";list.appendChild(e);return;}
       shown.forEach(function(p){
         var el=document.createElement("div"),who=document.createElement("div"),nm=document.createElement("b"),dt=document.createElement("span"),tx=document.createElement("p");
