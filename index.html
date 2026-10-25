@@ -143,6 +143,13 @@ dialog.lb::backdrop{background:rgba(0,0,0,.65)}
 .pform input[type=text],.pform textarea{width:100%;padding:8px;background:var(--bg);border:1px solid var(--line)}
 .pform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .pform .prev img{display:block;max-height:140px;max-width:100%}
+.wait{margin-top:12px;padding:10px;border:1px solid var(--line);background:var(--bg)}
+.wait h3{margin:0 0 4px;font-size:15px}
+.wait .wnow{margin:0;font-weight:700}
+.wait .wlv{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.wait .wlv button{flex:1 1 auto;min-height:40px;padding:6px 10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font:inherit}
+.wait .wlv button:disabled{opacity:.5;cursor:default}
+.wt{color:var(--pin);font-weight:700}
 .perr{color:var(--pin);font-size:13px}
 .pok{color:var(--ok);font-size:13px}
 </style>
@@ -440,6 +447,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<label class="lbl" for="memo" style="display:block;margin-top:10px">自分用のメモ(この端末だけに保存)</label>'+
       '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea></details>'+
       '<p class="note">'+posNote+'</p>'+
+      '<div id="wait"></div>'+
       '<div id="posts"></div>';
     document.getElementById("mydet").addEventListener("toggle",function(){myOpen[s.id]=this.open;});
     var ta=document.getElementById("memo");ta.value=db.memo[s.id]||"";
@@ -448,6 +456,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     detail.querySelectorAll("[data-star]").forEach(function(b){b.addEventListener("click",function(){
       var n=+b.getAttribute("data-star");db.rating[s.id]=(db.rating[s.id]===n)?0:n;save();refresh();});});
     mountPosts(s.id);
+    renderWait(s.id);
   }
 
   /* ---------- みんなの感想(コメントと写真) ---------- */
@@ -545,6 +554,52 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     return b;
   }
   var galReload=function(){};
+  /* ---------- いまの行列(待ち時間の報告) ----------
+     人数を5段階で報告してもらい、直近60分の中央値を出す。位置は確認しない。
+     get_wait_all が1度でも成功するまで(SQLを流していないあいだ)は、欄を出さない */
+  var WLABEL=["並びなし","1〜5人","6〜10人","11〜20人","21人以上"], WAITS={}, wOk=false, WK="paso-jiro-wait", wsent={}, wmsg={};
+  try{var wr=localStorage.getItem(WK);if(wr){var wp=JSON.parse(wr);if(wp&&typeof wp==="object")wsent=wp;}}catch(e){}
+  function wsave(){try{localStorage.setItem(WK,JSON.stringify(wsent));}catch(e){}}
+  function wtxt(l){return l===0?WLABEL[0]:"約"+WLABEL[l];}
+  function wago(t){var m=Math.max(0,Math.round((Date.now()-new Date(t).getTime())/60000));return m<1?"たったいま":m+"分前";}
+  function isOpenNow(s){return openState(s,new Date()).st==="open";}
+  function waitBadge(s){var w=WAITS[s.id];return w&&isOpenNow(s)?'<span class="wt">行列 '+wtxt(w.level)+'</span>':"";}
+  function loadWaits(){
+    if(!sbOn()||document.hidden)return;
+    rpc("get_wait_all",{}).then(function(rows){
+      WAITS={};(rows||[]).forEach(function(r){WAITS[r.shop_id]=r;});wOk=true;
+      drawList();renderWait(sel);
+    }).catch(function(){});
+  }
+  function renderWait(id){
+    var box=document.getElementById("wait");
+    if(!box||id!==sel)return;
+    var s=SHOPS.filter(function(x){return x.id===id;})[0];
+    if(!wOk||!s||!isOpenNow(s)){box.innerHTML="";box.className="";return;}
+    var w=WAITS[id],last=+wsent[id]||0,locked=Date.now()-last<600000,m=wmsg[id]||"",b="";
+    for(var i=0;i<WLABEL.length;i++)b+='<button type="button" data-wlv="'+i+'"'+(locked?' disabled':'')+'>'+WLABEL[i]+'</button>';
+    box.className="wait";
+    box.innerHTML='<h3>いまの行列</h3>'+
+      '<p class="wnow">'+(w?wtxt(w.level)+'<span class="meta" style="font-weight:400"> (直近60分の報告 '+w.n+'件・'+wago(w.newest)+(w.n===1?'・1件だけの報告です':'')+')</span>':'まだ報告がありません')+'</p>'+
+      '<p class="note" style="margin-top:8px">いま見た行列の人数を教えてください。</p>'+
+      '<div class="wlv" role="group" aria-label="行列の人数を報告">'+b+'</div>'+
+      '<p class="note" id="wmsg" role="status">'+esc(locked&&!m?"報告ありがとうございます。10分後に、また報告できます。":m)+'</p>'+
+      '<p class="note">利用者の報告で、実際と違うことがあります。店の近くにいるかは確認していません。<a href="guidelines.html">投稿のルール</a></p>';
+    box.querySelectorAll("[data-wlv]").forEach(function(bt){bt.addEventListener("click",function(){
+      var lv=+bt.getAttribute("data-wlv");
+      box.querySelectorAll("[data-wlv]").forEach(function(x){x.disabled=true;});
+      wmsg[id]="報告しています…";document.getElementById("wmsg").textContent=wmsg[id];
+      rpc("report_wait",{p_shop:id,p_level:lv}).then(function(){
+        wsent[id]=Date.now();wsave();wmsg[id]="報告しました。ありがとうございます。";loadWaits();renderWait(id);
+      },function(err){
+        wmsg[id]=err&&err.message==="rate"?"短い時間に報告しすぎです。少し待ってからお試しください。":"報告できませんでした。時間をおいて、もう一度お試しください。";
+        renderWait(id);
+      });
+    });});
+  }
+  setInterval(loadWaits,300000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)loadWaits();});
+
   function mountPosts(id){
     var box=document.getElementById("posts");
     if(!box||!sbOn())return;
@@ -656,7 +711,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var dd=dist(s), r=db.rating[s.id]||0;
     return '<li><button type="button" class="item" data-id="'+s.id+'"'+(s.id===sel?' aria-current="true"':'')+'>'+
       '<span class="nm">'+esc(s.name)+'</span><span class="dist">'+(dd!=null?dd.toFixed(1)+' km':'—')+'</span>'+
-      '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+stBadge(s)+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
+      '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+stBadge(s)+waitBadge(s)+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
   }
   var LIMIT=10;
   try{var ln=+localStorage.getItem("paso-jiro-n");if(ln>=10&&ln<=50&&ln%10===0)LIMIT=ln;}catch(e){}
@@ -830,6 +885,7 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   }
 
   refresh();
+  loadWaits();
 }, function(){
   document.getElementById("detail").innerHTML='<h3>店の詳細</h3><p class="empty">店のデータを読み込めませんでした。時間をおいて、ページを再読み込みしてください。</p>';
 });

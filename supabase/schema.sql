@@ -237,3 +237,49 @@ end $$;
 drop trigger if exists shop_requests_before_insert on public.shop_requests;
 create trigger shop_requests_before_insert before insert on public.shop_requests
   for each row execute function public.shop_requests_before_insert();
+
+-- ---------- 待ち時間の報告(supabase/wait.sql と同じ内容) ----------
+create table if not exists public.wait_reports (
+  id bigserial primary key,
+  shop_id text not null check (shop_id ~ '^[a-z0-9-]{1,40}$'),
+  level smallint not null check (level between 0 and 4),  -- 0:並びなし 1:1〜5人 2:6〜10人 3:11〜20人 4:21人以上
+  ip_hash text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists wait_reports_idx on public.wait_reports (shop_id, created_at desc);
+alter table public.wait_reports enable row level security;   -- ポリシーを作らない = anon は直接読み書きできない
+revoke all on public.wait_reports from anon, authenticated;
+
+create or replace function public.report_wait(p_shop text, p_level int) returns void
+language plpgsql security definer set search_path = public, extensions as $$
+begin
+  if p_level is null or p_level < 0 or p_level > 4 or p_shop is null or p_shop !~ '^[a-z0-9-]{1,40}$' then
+    raise exception 'bad_request';
+  end if;
+  if exists (select 1 from public.wait_reports
+              where shop_id = p_shop and ip_hash = public.client_hash()
+                and created_at > now() - interval '10 minutes') then
+    raise exception 'rate_limited';
+  end if;
+  perform public.check_rate('wait', 6, 40);
+  insert into public.wait_reports (shop_id, level, ip_hash)
+    values (p_shop, p_level, public.client_hash());
+  if random() < 0.02 then
+    delete from public.wait_reports where created_at < now() - interval '24 hours';
+  end if;
+end $$;
+revoke all on function public.report_wait(text, int) from public;
+grant execute on function public.report_wait(text, int) to anon;
+
+create or replace function public.get_wait_all() returns table(shop_id text, level int, n int, newest timestamptz)
+language sql stable security definer set search_path = public as $$
+  select w.shop_id,
+         (percentile_disc(0.5) within group (order by w.level))::int,
+         count(*)::int,
+         max(w.created_at)
+    from public.wait_reports w
+   where w.created_at > now() - interval '60 minutes'
+   group by w.shop_id
+$$;
+revoke all on function public.get_wait_all() from public;
+grant execute on function public.get_wait_all() to anon;
