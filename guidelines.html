@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>投稿のルール | パソ二郎</title>
+<link rel="icon" href="favicon.ico" sizes="32x32 48x48">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#F2C100">
+<style>
+:root{--bg:#F2F1ED;--panel:#FFFFFF;--ink:#1C1915;--mute:#6B645B;--line:#D9D5CC;--sign:#F2C100;--focus:#1C5FD4;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#14110E;--panel:#201B16;--ink:#F3EEE6;--mute:#A39A8D;--line:#3A332B;--focus:#7FAAF2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.75}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.inner{max-width:760px;margin:0 auto}
+header{background:var(--sign);color:#1C1915;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:12px}
+header a{color:inherit;font-weight:700}
+h1{font-size:clamp(20px,5vw,26px);line-height:1.3;margin:6px 0 0}
+main{padding-block:16px 48px}
+section{background:var(--panel);border:1px solid var(--line);padding:16px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 8px;line-height:1.4}
+p{margin:0 0 8px}
+ul{margin:0 0 8px;padding-left:1.4em}
+li{margin-bottom:4px}
+.mute{color:var(--mute);font-size:13px}
+</style>
+</head>
+<body>
+<header class="gut"><div class="inner">
+  <a href="./">← パソ二郎の地図に戻る</a>
+  <h1>投稿のルールとプライバシー</h1>
+</div></header>
+
+<main class="gut"><div class="inner">
+
+<section>
+  <h2>「みんなの感想」について</h2>
+  <p>お店の詳細で、感想と写真を投稿できます。投稿は、ログインなしで、誰でも見られます。ニックネームは自由に付けられます(省略できます)。</p>
+</section>
+
+<section>
+  <h2>書かないでください</h2>
+  <ul>
+    <li>お店や人への悪口、中傷、脅し</li>
+    <li>名前、住所、電話番号、SNSのアカウントなど、個人を特定できる情報</li>
+    <li>人の顔が分かる写真、他の人が撮った写真や、著作権のある画像</li>
+    <li>広告や宣伝、同じ内容の連続投稿、お店と関係のない内容</li>
+    <li>法律に反する内容、性的・暴力的な内容</li>
+  </ul>
+</section>
+
+<section>
+  <h2>通報と削除</h2>
+  <ul>
+    <li>問題のある投稿は、投稿の「通報」から知らせてください。通報が3件集まった投稿は、自動で非表示になります。</li>
+    <li>自分の投稿は、投稿した端末から「削除」できます。端末の記録を消すと、削除できなくなります。</li>
+    <li>運営が、ルールに反する投稿を、予告なく削除することがあります。</li>
+    <li>削除のご依頼は、<a href="https://github.com/pasojiro-dev/pasojiro/issues">こちら(GitHub)</a>にお知らせください。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>プライバシー</h2>
+  <ul>
+    <li>投稿に必要なのは、感想の文章だけです。名前やメールアドレスは求めません。</li>
+    <li>写真は、投稿前にこの端末で縮小してJPEGにし直します。このとき、撮影場所などの情報は取り除かれます。</li>
+    <li>荒らしを防ぐため、投稿・通報・削除の回数を数える目的で、接続元の情報を、元に戻せない形に変換して一時的に保管します。この値から、接続元を知ることはできません。</li>
+    <li>地図の「現在地を使う」で取得した位置は、この端末の中だけで使い、送信や保存はしていません。</li>
+    <li>訪問チェック、評価、自分用のメモは、この端末のブラウザの中だけに保存します。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>免責</h2>
+  <p>投稿の内容は、投稿した人の責任で書かれたものです。パソ二郎は、その正確さを保証しません。お店の営業時間や定休日などは、店の公式Xなどで確認してください。</p>
+  <p class="mute">この文書は試行版(v0.1)です。必要に応じて直します。</p>
+</section>
+
+</div></main>
+</body>
+</html>

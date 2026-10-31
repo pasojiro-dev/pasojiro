@@ -34,6 +34,12 @@ header.band .inner{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 16px
 h1{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,42px);line-height:1.1;margin:0}
 .sub{margin:0;font-weight:700;font-size:14px}
 .beta{margin:0;font-size:12.5px;width:100%}
+header.band a{color:inherit;font-weight:700}
+.rule{width:100%;margin:8px 0 0;padding:8px 12px;background:var(--panel);color:var(--ink);border:2px solid var(--ink);font-size:13px;line-height:1.55}
+.rule b{display:block;font-size:15px}
+.rule b::before{content:"✓ ";color:var(--ok)}
+.rule a{color:var(--focus);text-decoration:underline}
+.okb{display:inline-block;margin-right:6px;padding:0 6px;border:2px solid var(--ok);color:var(--ok);font-weight:700;font-size:12.5px}
 main{padding-block:16px 40px}
 .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
 @media (max-width:800px){.grid{grid-template-columns:minmax(0,1fr)}}
@@ -97,6 +103,48 @@ ul.list li + li{border-top:1px solid var(--line)}
 @media (prefers-reduced-motion:reduce){.bowl{animation-duration:5s}}
 #gpsmsg.busy{font-size:14px;font-weight:700;color:var(--ink)}
 .btn:disabled{opacity:.6;cursor:progress}
+/* 店名の右に出す、投稿された写真 */
+.dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.dhead h2{min-width:0;overflow-wrap:anywhere}
+.dphoto{flex:none}
+.dphoto img{display:block;width:72px;height:72px;object-fit:cover;border:1px solid var(--line);background:var(--bg)}
+.dphoto[hidden]{display:none}
+/* みんなの写真(これまでに投稿された写真の一覧) */
+.panel[hidden]{display:none}
+.gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+.gal button{display:block;padding:0;border:0;background:var(--bg);cursor:pointer;aspect-ratio:1/1;overflow:hidden}
+.gal img{display:block;width:100%;height:100%;object-fit:cover}
+.gal button{position:relative}
+.gal .lc{position:absolute;right:3px;bottom:3px;padding:0 5px;background:rgba(0,0,0,.65);color:#fff;font-size:11px;font-weight:700;line-height:18px}
+.gal .lc[hidden]{display:none}
+.like{margin-top:8px;border:2px solid var(--ink);background:transparent;color:var(--ink);padding:2px 12px;min-height:36px;font-weight:700;cursor:pointer}
+.like[aria-pressed="true"]{border-color:var(--pin);color:var(--pin)}
+.like:disabled{opacity:.6;cursor:progress}
+#lblike{margin-top:6px}
+#galmore{margin-top:10px}
+dialog.lb{width:calc(100% - 24px);max-width:640px;padding:12px;border:2px solid var(--ink);background:var(--panel);color:var(--ink)}
+dialog.lb::backdrop{background:rgba(0,0,0,.65)}
+.lb img{display:block;max-width:100%;max-height:68vh;margin:0 auto;background:var(--bg)}
+.lb .cap{margin:8px 0 0;font-size:13px;overflow-wrap:anywhere}
+.lb .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+/* みんなの感想 */
+.posts{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.fold summary{cursor:pointer;min-height:40px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--mute)}
+.fold summary .fstat{font-weight:400;letter-spacing:0}
+.fold[open] summary{margin-bottom:8px}
+.post{padding:10px 0;border-top:1px solid var(--line)}
+.post:first-child{border-top:0}
+.post .who{font-size:12.5px;color:var(--mute);display:flex;flex-wrap:wrap;gap:2px 10px;align-items:center}
+.post .who b{color:var(--ink)}
+.post p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px}
+.post img{display:block;max-width:100%;max-height:260px;margin-top:8px;border:1px solid var(--line);background:var(--bg)}
+.linkish{background:none;border:0;padding:2px 4px;color:var(--mute);text-decoration:underline;cursor:pointer;font-size:12.5px;min-height:28px}
+.pform{margin-top:12px;display:grid;gap:8px}
+.pform input[type=text],.pform textarea{width:100%;padding:8px;background:var(--bg);border:1px solid var(--line)}
+.pform .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.pform .prev img{display:block;max-height:140px;max-width:100%}
+.perr{color:var(--pin);font-size:13px}
+.pok{color:var(--ok);font-size:13px}
 </style>
 </head>
 <body>
@@ -105,6 +153,8 @@ ul.list li + li{border-top:1px solid var(--line)}
     <h1>パソ二郎</h1>
     <p class="sub">全国の二郎系マップ(試作版)</p>
     <p class="beta">ラーメン二郎の公式アプリではありません。店の情報は検索で確認できたものだけを載せています。</p>
+    <p class="rule"><b>掲載基準を満たす店だけを載せています</b>出典が2つ以上、二郎系の特徴が3つ以上、営業の確認ができた店だけです(直系店は、ラーメン二郎の看板を掲げる営業中の店)。<a href="criteria.html">掲載の基準を見る</a></p>
+    <p class="beta"><a id="galjump" href="#gallery" hidden>みんなの写真を見る ↓</a> <a id="reqjump" href="#reqpanel" hidden>店の追加をリクエスト ↓</a></p>
   </div>
 </header>
 
@@ -124,6 +174,22 @@ ul.list li + li{border-top:1px solid var(--line)}
 
     <div class="col">
       <section class="panel" id="detail" aria-live="polite"></section>
+
+      <section class="panel" id="gallery" hidden>
+        <h3>みんなの写真</h3>
+        <div class="gal" id="galgrid"></div>
+        <p class="note" id="galmsg" role="status"></p>
+        <button type="button" class="btn" id="galmore" hidden>もっと見る</button>
+        <dialog class="lb" id="lb" aria-label="投稿された写真">
+          <img id="lbimg" alt="">
+          <p class="cap" id="lbcap"></p>
+          <div id="lblike"></div>
+          <div class="acts">
+            <button type="button" class="btn" id="lbgo">この店を見る</button>
+            <button type="button" class="btn" id="lbx">閉じる</button>
+          </div>
+        </dialog>
+      </section>
 
       <section class="panel">
         <div class="ctrl">
@@ -151,16 +217,48 @@ ul.list li + li{border-top:1px solid var(--line)}
         </div>
         <p class="note" id="gpsmsg" role="status" hidden></p>
         <p class="note" id="openmsg" hidden></p>
+        <p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。行く前に、店の公式Xなどで最新の情報を確認してください。</p>
+        <div class="ctrl" style="margin-top:10px">
+          <span style="font-size:13px;font-weight:700">近い順の表示件数</span>
+          <div class="seg" role="group" aria-label="近い順の表示件数">
+            <button type="button" data-n="10" aria-pressed="true">10件</button>
+            <button type="button" data-n="20" aria-pressed="false">20件</button>
+            <button type="button" data-n="30" aria-pressed="false">30件</button>
+            <button type="button" data-n="40" aria-pressed="false">40件</button>
+            <button type="button" data-n="50" aria-pressed="false">50件</button>
+          </div>
+        </div>
         <div id="list"></div>
+      </section>
+
+      <section class="panel" id="reqpanel" hidden>
+        <details class="fold" id="reqdet">
+          <summary>店の追加をリクエストする</summary>
+          <p class="note" style="margin-top:0">載っていない二郎系の店があれば、教えてください。<a href="criteria.html">掲載の基準</a>を満たす店だけを、確認してから追加します(すぐには載りません)。</p>
+          <form class="pform" id="reqform" novalidate>
+            <label class="lbl" for="rqname">店名(必須)</label>
+            <input type="text" id="rqname" maxlength="60" autocomplete="off">
+            <label class="lbl" for="rqplace">場所(必須・住所、または市区町村と最寄り駅)</label>
+            <input type="text" id="rqplace" maxlength="120" autocomplete="off">
+            <label class="lbl" for="rqurl">参考のページ(食べログ・公式サイトなど。分かれば)</label>
+            <input type="text" id="rqurl" maxlength="300" inputmode="url" autocomplete="off" placeholder="https://">
+            <label class="lbl" for="rqnote">ひとこと(任意)</label>
+            <textarea id="rqnote" maxlength="300" placeholder="二郎系だと分かる理由など(300字まで)"></textarea>
+            <div class="hp" aria-hidden="true"><input type="text" id="rqweb" tabindex="-1" autocomplete="off"></div>
+            <p class="note">連絡先などの個人情報は書かないでください。送った内容は、運営だけが見ます。返信はできません。</p>
+            <div class="row" style="margin-top:0"><button type="submit" class="btn" id="rqsend">リクエストを送る</button><span id="rqmsg" role="status"></span></div>
+          </form>
+        </details>
       </section>
 
       <section class="panel about">
         <h3>このデータについて</h3>
         <p>二郎度(1〜5)は、口コミにある麺の太さ、野菜の盛り、スープの濃さなどから付けた仮の値です。5が本家級です。</p>
         <p>ピンの位置は住所や駅からの距離をもとにした目安です。行く前に「Googleマップで開く」で確認してください。</p>
-        <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、いまのところ長野県で試している段階です(独立系は該当する店がまだありません)。</p>
+        <p>ラーメン二郎の直系店は全国分を載せています。独立系・インスパイア系は、北海道・東北・関東などから順に、確認できた店を少しずつ追加しています(独立系は該当する店がまだありません)。</p>
         <p>どんな店を載せるか、二郎度をどう付けているかは、<a href="criteria.html">掲載の基準</a>に書いています。直系店は本家なので、二郎度は一律5です。</p>
         <p>営業時間・定休日は、店舗一覧サイト、食べログ、各店の公式サイトの情報をもとにした目安です。「頃」や「曜日により異なる」と書かれた店は、営業中の判定に使えません。公式Xのリンクは、一覧サイトに載っていたアカウントです。</p>
+        <p>感想と写真の投稿のルールは、<a href="guidelines.html">投稿のルール</a>にあります。</p>
         <p>訪問チェックと評価は、このブラウザの中だけに保存されます。地図は © OpenStreetMap contributors。<a href="privacy.html">プライバシーポリシー</a></p>
       </section>
     </div>
@@ -300,6 +398,17 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
 
   /* ---------- detail ---------- */
   var detail=document.getElementById("detail");
+  /* 掲載基準を満たしている根拠を、店ごとにデータから数えて出す */
+  function okBadge(s){
+    var a='<a href="criteria.html">掲載の基準</a>';
+    if(s.kind==="direct")return '<span class="okb">✓ 掲載基準を満たす店</span>ラーメン二郎の直系店(営業中) ・ '+a;
+    var n=(s.src||[]).length,f=(s.feat||[]).length;
+    if(s.exception)return '<span class="okb">✓ 例外として掲載</span>理由は下に書いています ・ '+a;
+    if(n>=2&&f>=3)return '<span class="okb">✓ 掲載基準を満たす店</span>出典'+n+'件 ・ 確認できた特徴'+f+'つ ・ '+a;
+    return a+'を確認中';
+  }
+  /* 全店に共通の注意(営業時間は変わる、公式Xで確認)だけの補足は、店ごとには出さない。共通の注意は、近い順の箱に1回だけ書く */
+  var GENERIC_HNOTE=/^営業時間(・定休日)?は(変わることがあります。?)?(公式Xで確認してください)?。?$/;
   function drawDetail(){
     var s=SHOPS.filter(function(x){return x.id===sel;})[0];
     if(!s){detail.innerHTML='<h3>店の詳細</h3><p class="empty">地図のピンか、下のリストから店を選ぶと、ここに詳細が出ます。</p>';return;}
@@ -309,32 +418,236 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
     var stars="";for(var i=1;i<=5;i++)stars+='<button type="button" data-star="'+i+'" class="'+(i<=r?'on':'')+'" aria-label="評価'+i+'" aria-pressed="'+(i===r)+'">★</button>';
     var dd=dist(s);
     detail.innerHTML=
-      '<h2>'+esc(s.name)+'</h2>'+
+      '<div class="dhead"><h2>'+esc(s.name)+'</h2><a class="dphoto" id="dphoto" hidden></a></div>'+
       '<p class="meta">'+esc(s.group)+'</p>'+
+      '<p class="meta">'+okBadge(s)+'</p>'+
       '<p class="meta">'+(s.addr?esc(s.addr):"住所は未確認")+(s.tel?' ・ '+esc(s.tel):"")+'</p>'+
       (dd!=null?'<p class="meta">'+esc(base.n)+'から約'+dd.toFixed(1)+'km(直線)</p>':'')+
       '<p class="meta">いま: '+stText(s)+'</p>'+
       hoursHtml(s)+
       (s.closed?'<p class="meta">定休日: '+esc(s.closed)+'</p>':'')+
-      (s.hnote?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
+      (s.hnote&&!GENERIC_HNOTE.test(s.hnote)?'<p class="meta">'+esc(s.hnote)+'</p>':'')+
       (s.feat?'<p class="meta">確認できた特徴: '+s.feat.map(esc).join("・")+'</p>':'')+
       (s.exception?'<p class="meta">掲載の理由: '+esc(s.exception)+'</p>':'')+
       (s.src&&s.src.length?'<p class="meta">出典: '+s.src.map(function(x){return '<a href="'+esc(x.u)+'" target="_blank" rel="noopener">'+esc(x.t)+'</a>';}).join(" / ")+'</p>':'')+
-      '<p class="note">営業時間・定休日は変わることがあります。祝日・臨時休業・売り切れ終了は反映されていません。最新の情報は店の公式Xなどで確認してください。</p>'+
       '<div class="row"><span class="lbl">二郎度(仮)</span>'+meter(s.jiro)+'<span class="meta">'+s.jiro+' / 5</span></div>'+
       '<p class="note">'+esc(s.memo)+'</p>'+
       '<div class="row"><button type="button" class="btn" id="vis" aria-pressed="'+v+'">'+(v?"✓ 行った":"行った店にする")+'</button>'+
       '<a class="linkbtn" href="https://www.google.com/maps/search/?api=1&query='+q+'" target="_blank" rel="noopener">Googleマップで開く</a>'+
       '<a class="linkbtn" href="'+(s.x?"https://x.com/"+encodeURIComponent(s.x):"https://x.com/search?f=user&q="+encodeURIComponent(s.name))+'" target="_blank" rel="noopener">'+(s.x?"公式Xを見る":"Xで店を探す")+'</a></div>'+
+      '<details class="fold" id="mydet" style="margin-top:10px"'+(myOpen[s.id]?' open':'')+'><summary>自分の評価とメモ <span class="fstat">('+(r?'★'+r:'未評価')+(db.memo[s.id]?' ・ メモあり':'')+')</span></summary>'+
       '<div class="row"><span class="lbl">自分の評価</span><span class="stars">'+stars+'</span></div>'+
-      '<label class="lbl" for="memo" style="display:block;margin-top:10px">メモ</label>'+
-      '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea>'+
-      '<p class="note">'+posNote+'</p>';
+      '<label class="lbl" for="memo" style="display:block;margin-top:10px">自分用のメモ(この端末だけに保存)</label>'+
+      '<textarea id="memo" placeholder="コールの内容、麺量、混み具合など"></textarea></details>'+
+      '<p class="note">'+posNote+'</p>'+
+      '<div id="posts"></div>';
+    document.getElementById("mydet").addEventListener("toggle",function(){myOpen[s.id]=this.open;});
     var ta=document.getElementById("memo");ta.value=db.memo[s.id]||"";
     ta.addEventListener("input",function(){db.memo[s.id]=ta.value;save();});
     document.getElementById("vis").addEventListener("click",function(){db.visited[s.id]=!db.visited[s.id];save();refresh();});
     detail.querySelectorAll("[data-star]").forEach(function(b){b.addEventListener("click",function(){
       var n=+b.getAttribute("data-star");db.rating[s.id]=(db.rating[s.id]===n)?0:n;save();refresh();});});
+    mountPosts(s.id);
+  }
+
+  /* ---------- みんなの感想(コメントと写真) ---------- */
+  /* Supabase の「Project URL」と「anon public key」を入れると有効になる。空のあいだは、この欄は出ない */
+  var SB_URL="https://vzssnalpprntydcqybwi.supabase.co", SB_KEY="sb_publishable_Dn1NVT5_BvnJjDAUmPTSaQ_G9crMmk0";
+  function sbCfg(){return window.PASO_SB||{url:SB_URL,key:SB_KEY};}
+  function sbOn(){var c=sbCfg();return !!(c.url&&c.key);}
+  function sbFetch(path,opt){
+    var c=sbCfg(),h={apikey:c.key,Authorization:"Bearer "+c.key},k;
+    opt=opt||{};
+    for(k in opt.headers)h[k]=opt.headers[k];
+    opt.headers=h;
+    return fetch(c.url+path,opt);
+  }
+  var PK="paso-jiro-posts", pdata={mine:{},reported:{},nick:"",liked:{},dev:""}, postCache={}, drafts={}, pOpen={}, myOpen={};
+  try{var pr=localStorage.getItem(PK);if(pr){var pp=JSON.parse(pr);if(pp&&typeof pp==="object"){pdata.mine=pp.mine||{};pdata.reported=pp.reported||{};pdata.nick=pp.nick||"";pdata.liked=pp.liked||{};pdata.dev=pp.dev||"";}}}catch(e){}
+  function psave(){try{localStorage.setItem(PK,JSON.stringify(pdata));}catch(e){}}
+  function hex(a){return Array.prototype.map.call(new Uint8Array(a),function(x){return ("0"+x.toString(16)).slice(-2);}).join("");}
+  function sha256hex(s){return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(hex);}
+  function newToken(){var a=new Uint8Array(24);crypto.getRandomValues(a);return hex(a);}
+  function newId(){
+    if(crypto.randomUUID)return crypto.randomUUID();
+    var a=new Uint8Array(16),h;crypto.getRandomValues(a);a[6]=a[6]&15|64;a[8]=a[8]&63|128;h=hex(a);
+    return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20);
+  }
+  /* 写真は端末で縮小してJPEGにし直す。このとき位置情報などのメタデータは消える */
+  function resizePhoto(file){
+    return new Promise(function(res,rej){
+      var img=new Image(),url=URL.createObjectURL(file);
+      img.onload=function(){
+        URL.revokeObjectURL(url);
+        var w=img.naturalWidth,h=img.naturalHeight,r=Math.min(1,1280/Math.max(w,h)),q=.82,c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(w*r));c.height=Math.max(1,Math.round(h*r));
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        (function go(){c.toBlob(function(b){
+          if(!b)return rej(new Error("photo"));
+          if(b.size>900*1024&&q>.4){q-=.14;return go();}
+          if(b.size>1000*1024)return rej(new Error("photo"));
+          res(b);},"image/jpeg",q);})();
+      };
+      img.onerror=function(){URL.revokeObjectURL(url);rej(new Error("photo"));};
+      img.src=url;
+    });
+  }
+  /* いいね!の列(like_count)がサーバーにまだ無いときは、いいね!なしで動く */
+  var LIKES=true;
+  function pfields(){return "id,nickname,body,photo_path,created_at"+(LIKES?",like_count":"");}
+  function getPosts(q){
+    return sbFetch("/rest/v1/posts?"+q()).then(function(r){
+      if(!r.ok&&LIKES){LIKES=false;return sbFetch("/rest/v1/posts?"+q());}
+      return r;
+    });
+  }
+  function loadPosts(id){
+    return getPosts(function(){return "shop_id=eq."+encodeURIComponent(id)+"&select="+pfields()+"&order=created_at.desc&limit=30";})
+      .then(function(r){if(!r.ok)throw new Error("load");return r.json();})
+      .then(function(rows){postCache[id]=rows;return rows;});
+  }
+  function rpc(name,args){
+    return sbFetch("/rest/v1/rpc/"+name,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(args)})
+      .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"rpc");});return r.json().catch(function(){return null;});});
+  }
+  function fdate(s){var d=new Date(s);return isNaN(d)?"":d.getFullYear()+"/"+(d.getMonth()+1)+"/"+d.getDate();}
+  /* 店名の右に、いちばん新しい投稿写真を1枚出す(写真つきの投稿がなければ出さない) */
+  function headPhoto(rows){
+    var a=document.getElementById("dphoto");if(!a)return;
+    var p=null;(rows||[]).some(function(x){if(x.photo_path){p=x;return true;}return false;});
+    if(!p){a.hidden=true;a.textContent="";return;}
+    var u=sbCfg().url+"/storage/v1/object/public/photos/"+p.photo_path,old=a.firstChild;
+    if(old&&old.src===u){a.hidden=false;return;}
+    var im=document.createElement("img");
+    im.src=u;im.alt="みんなが投稿した写真(いちばん新しい1枚)";
+    a.href=u;a.target="_blank";a.rel="noopener";a.textContent="";a.appendChild(im);a.hidden=false;
+  }
+  /* 投稿写真への「いいね!」。1つの端末は、1つの写真に1回(もう一度押すと取り消し) */
+  function devId(){if(!pdata.dev||pdata.dev.length<16){pdata.dev=newToken();psave();}return pdata.dev;}
+  function likeBtn(p){
+    var b=document.createElement("button");b.type="button";b.className="like";
+    function paint(){var on=!!pdata.liked[p.id],n=p.like_count||0;
+      b.setAttribute("aria-pressed",String(on));b.textContent=(on?"♥ ":"♡ ")+n;
+      b.setAttribute("aria-label","この写真にいいね!(いま"+n+"件)"+(on?" 押すと取り消します":""));}
+    paint();
+    b.addEventListener("click",function(){
+      if(b.disabled)return;
+      var on=!pdata.liked[p.id];b.disabled=true;
+      rpc(on?"like_post":"unlike_post",{p_id:p.id,p_dev:devId()}).then(function(n){
+        if(on)pdata.liked[p.id]=true;else delete pdata.liked[p.id];psave();
+        if(typeof n==="number")p.like_count=n;
+        paint();
+      },function(e){
+        b.textContent=e.message==="rate"?"押しすぎです。少し待ってください":"送れませんでした";
+        setTimeout(paint,1800);
+      }).then(function(){b.disabled=false;});
+    });
+    return b;
+  }
+  var galReload=function(){};
+  function mountPosts(id){
+    var box=document.getElementById("posts");
+    if(!box||!sbOn())return;
+    box.className="posts";
+    box.innerHTML='<details class="fold" id="pdet"'+(pOpen[id]||drafts[id]?' open':'')+'><summary>みんなの感想・写真を投稿する <span class="fstat" id="pcount"></span></summary><div id="plist" aria-live="polite"></div>'+
+      '<form class="pform" id="pform" novalidate>'+
+      '<label class="lbl" for="pnick">ニックネーム(省略できます)</label>'+
+      '<input type="text" id="pnick" maxlength="20" autocomplete="off" placeholder="名無しの二郎">'+
+      '<label class="lbl" for="pbody">感想</label>'+
+      '<textarea id="pbody" maxlength="300" placeholder="コール、量、待ち時間など(300字まで)"></textarea>'+
+      '<div><label class="lbl" for="pphoto">写真(1枚)</label> <input type="file" id="pphoto" accept="image/*"></div>'+
+      '<div class="prev" id="pprev"></div>'+
+      '<div class="hp" aria-hidden="true"><input type="text" id="pweb" tabindex="-1" autocomplete="off"></div>'+
+      '<p class="note">投稿は、誰でも見られます。お店や人の迷惑になること、人の顔や個人情報が写った写真は、載せないでください。写真の位置情報は、投稿前にこの端末で取り除きます。通報が集まった投稿は、自動で非表示になります。詳しくは<a href="guidelines.html">投稿のルール</a>。</p>'+
+      '<div class="row" style="margin-top:0"><button type="submit" class="btn" id="psend">投稿する</button><span id="pmsg" role="status"></span></div>'+
+      '</form></details>';
+    document.getElementById("pdet").addEventListener("toggle",function(){pOpen[id]=this.open;});
+    var list=document.getElementById("plist"),form=document.getElementById("pform"),
+        nickEl=document.getElementById("pnick"),bodyEl=document.getElementById("pbody"),fileEl=document.getElementById("pphoto"),
+        prev=document.getElementById("pprev"),web=document.getElementById("pweb"),send=document.getElementById("psend"),msgEl=document.getElementById("pmsg"),
+        sending=false;
+    nickEl.value=pdata.nick||"";
+    bodyEl.value=drafts[id]||"";
+    bodyEl.addEventListener("input",function(){drafts[id]=bodyEl.value;});
+    function note(t,ok){msgEl.className=ok?"pok":"perr";msgEl.textContent=t||"";}
+    function render(rows){
+      list.textContent="";
+      var shown=(rows||[]).filter(function(p){return !pdata.reported[p.id];});
+      headPhoto(shown);
+      document.getElementById("pcount").textContent=shown.length?"("+shown.length+"件)":"(まだありません)";
+      if(!shown.length){var e=document.createElement("p");e.className="empty";e.textContent="まだ感想がありません。最初の1件を書いてみませんか。";list.appendChild(e);return;}
+      shown.forEach(function(p){
+        var el=document.createElement("div"),who=document.createElement("div"),nm=document.createElement("b"),dt=document.createElement("span"),tx=document.createElement("p");
+        el.className="post";who.className="who";
+        nm.textContent=p.nickname;dt.textContent=fdate(p.created_at);
+        who.appendChild(nm);who.appendChild(dt);
+        var rp=document.createElement("button");rp.type="button";rp.className="linkish";rp.textContent="通報";
+        rp.addEventListener("click",function(){
+          if(!confirm("この投稿を通報しますか?\n通報が集まると、投稿は自動で非表示になります。"))return;
+          rpc("report_post",{p_id:p.id}).then(function(){pdata.reported[p.id]=1;psave();render(postCache[id]);note("通報しました。ありがとうございます。",true);},
+            function(err){note(err.message==="rate"?"通報が多すぎます。少し待ってからお試しください。":"通報できませんでした。",false);});
+        });
+        who.appendChild(rp);
+        if(pdata.mine[p.id]){
+          var dl=document.createElement("button");dl.type="button";dl.className="linkish";dl.textContent="削除";
+          dl.addEventListener("click",function(){
+            if(!confirm("自分の投稿を削除しますか?"))return;
+            rpc("delete_my_post",{p_id:p.id,p_token:pdata.mine[p.id]}).then(function(ok){
+              if(ok){delete pdata.mine[p.id];psave();}
+              return loadPosts(id).then(render).then(function(){galReload();});
+            }).catch(function(){note("削除できませんでした。",false);});
+          });
+          who.appendChild(dl);
+        }
+        tx.textContent=p.body;
+        el.appendChild(who);el.appendChild(tx);
+        if(p.photo_path){
+          var a=document.createElement("a"),im=document.createElement("img");
+          a.href=sbCfg().url+"/storage/v1/object/public/photos/"+p.photo_path;a.target="_blank";a.rel="noopener";
+          im.src=a.href;im.alt="投稿された写真";im.loading="lazy";
+          a.appendChild(im);el.appendChild(a);
+          if(LIKES)el.appendChild(likeBtn(p));
+        }
+        list.appendChild(el);
+      });
+    }
+    if(postCache[id])render(postCache[id]);
+    else{list.textContent="読み込み中…";}
+    loadPosts(id).then(render,function(){list.textContent="感想を読み込めませんでした。";});
+    fileEl.addEventListener("change",function(){
+      prev.textContent="";
+      var f=fileEl.files[0];
+      if(!f)return;
+      var im=document.createElement("img"),u=URL.createObjectURL(f);
+      im.onload=function(){URL.revokeObjectURL(u);};im.src=u;im.alt="選んだ写真";prev.appendChild(im);
+    });
+    form.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(sending||web.value)return;
+      var body=bodyEl.value.trim(),nick=(nickEl.value.trim()||"名無しの二郎").slice(0,20),file=fileEl.files[0];
+      if(!body){note("感想を書いてください。",false);return;}
+      sending=true;send.disabled=true;note("");
+      msgEl.className="";msgEl.textContent=" 投稿しています…";
+      var pid=newId(),token=newToken();
+      var up=file?resizePhoto(file).then(function(blob){
+        return sbFetch("/storage/v1/object/photos/"+id+"/"+pid+".jpg",{method:"POST",headers:{"Content-Type":"image/jpeg","x-upsert":"false"},body:blob})
+          .then(function(r){if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"photo");});return id+"/"+pid+".jpg";});
+      }):Promise.resolve(null);
+      up.then(function(path){
+        return sha256hex(token).then(function(th){
+          return sbFetch("/rest/v1/posts",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},
+            body:JSON.stringify({id:pid,shop_id:id,nickname:nick,body:body,photo_path:path,token_hash:th})});
+        });
+      }).then(function(r){
+        if(!r.ok)return r.text().then(function(t){throw new Error(/rate_limited/.test(t)?"rate":"post");});
+        pdata.mine[pid]=token;pdata.nick=nick;psave();
+        bodyEl.value="";drafts[id]="";fileEl.value="";prev.textContent="";
+        note("投稿しました。",true);
+        return loadPosts(id).then(render).then(function(){galReload();});
+      }).catch(function(err){
+        note(err.message==="rate"?"短い時間に投稿しすぎです。少し待ってからお試しください。":err.message==="photo"?"写真を送れませんでした。別の写真か、写真なしでお試しください。":"投稿できませんでした。時間をおいてお試しください。",false);
+      }).then(function(){sending=false;send.disabled=false;});
+    });
   }
 
   /* ---------- list ---------- */
@@ -345,13 +658,17 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
       '<span class="nm">'+esc(s.name)+'</span><span class="dist">'+(dd!=null?dd.toFixed(1)+' km':'—')+'</span>'+
       '<span class="sm">'+meter(s.jiro)+'<span>'+esc(s.area)+'</span>'+stBadge(s)+(db.visited[s.id]?'<span class="chk">✓ 行った</span>':'')+(r?'<span>★'+r+'</span>':'')+'</span><span></span></button></li>';
   }
+  var LIMIT=10;
+  try{var ln=+localStorage.getItem("paso-jiro-n");if(ln>=10&&ln<=50&&ln%10===0)LIMIT=ln;}catch(e){}
   function drawList(){
     var arr=SHOPS.filter(function(s){return visible(s)&&(filter==="all"||(filter==="done"?!!db.visited[s.id]:!db.visited[s.id]));});
     var placed=arr.filter(function(s){return s.lat!=null;}).sort(function(a,b){return dist(a)-dist(b);});
     var un=arr.filter(function(s){return s.lat==null;});
     var h="";
     if(!arr.length)h='<p class="empty" style="margin-top:12px">この条件の店はまだありません。</p>';
-    if(placed.length)h+='<div class="sect">近い順('+esc(base.n)+'から)</div><ul class="list">'+placed.map(item).join("")+'</ul>';
+    var top=placed.slice(0,LIMIT);
+    if(placed.length)h+='<div class="sect">近い順('+esc(base.n)+'から) '+top.length+'/'+placed.length+'件</div><ul class="list">'+top.map(item).join("")+'</ul>'+
+      (placed.length>top.length?'<p class="note">近い順に'+top.length+'件を表示しています。上の件数のタブで、最大50件まで増やせます。地図のピンからは、すべての店を選べます。</p>':'');
     if(un.length)h+='<div class="sect">場所を調べ中の店</div><ul class="list">'+un.map(item).join("")+'</ul>';
     listEl.innerHTML=h;
     listEl.querySelectorAll(".item").forEach(function(b){b.addEventListener("click",function(){choose(b.getAttribute("data-id"),true);});});
@@ -411,9 +728,106 @@ fetch("shops.json").then(function(r){if(!r.ok)throw new Error(r.status);return r
   }
   segment("data-f",function(v){filter=v;drawList();});
   segment("data-k",function(v){kind=v;refresh();});
+  segment("data-n",function(v){LIMIT=+v;try{localStorage.setItem("paso-jiro-n",String(LIMIT));}catch(e){}drawList();});
+  document.querySelectorAll(".seg button[data-n]").forEach(function(b){b.setAttribute("aria-pressed",String(+b.getAttribute("data-n")===LIMIT));});
   var openBtn=document.getElementById("openonly");
   openBtn.addEventListener("click",function(){onlyOpen=!onlyOpen;openBtn.setAttribute("aria-pressed",String(onlyOpen));refresh();});
   setInterval(function(){if(onlyOpen){showKind();updateOpenMsg();}drawList();},60000);
+
+  /* ---------- みんなの写真: これまでに投稿された写真を、新しい順に一覧で見る ---------- */
+  if(sbOn()){
+    var GN=24,goff=0,gbusy=false,gend=false,gen=0,shopById={};
+    SHOPS.forEach(function(s){shopById[s.id]=s;});
+    var gal=document.getElementById("gallery"),gGrid=document.getElementById("galgrid"),gMsg=document.getElementById("galmsg"),
+        gMore=document.getElementById("galmore"),lb=document.getElementById("lb"),lbImg=document.getElementById("lbimg"),
+        lbCap=document.getElementById("lbcap"),lbShop=null,gCount=0;
+    function photoUrl(path){return sbCfg().url+"/storage/v1/object/public/photos/"+path;}
+    function paintBadge(lc,p){var n=p.like_count||0;lc.textContent=n?"♥ "+n:"";lc.hidden=!n;}
+    var lbPost=null,lbBadge=null,lbLike=document.getElementById("lblike");
+    lb.addEventListener("close",function(){if(lbBadge&&lbPost)paintBadge(lbBadge,lbPost);});
+    function openPhoto(p,s,lc){
+      lbShop=s;lbPost=p;lbBadge=lc;
+      lbLike.textContent="";if(LIKES)lbLike.appendChild(likeBtn(p));
+      lbShop=s;lbImg.src=photoUrl(p.photo_path);lbImg.alt=s.name+"の投稿写真";
+      lbCap.textContent=s.name+" ・ "+p.nickname+" ・ "+fdate(p.created_at);
+      if(lb.showModal)lb.showModal();else window.open(lbImg.src,"_blank","noopener");
+    }
+    document.getElementById("lbx").addEventListener("click",function(){lb.close();});
+    document.getElementById("lbgo").addEventListener("click",function(){
+      lb.close();
+      if(lbShop){choose(lbShop.id,true);document.getElementById("detail").scrollIntoView({behavior:"smooth",block:"start"});}
+    });
+    lb.addEventListener("click",function(e){if(e.target===lb)lb.close();});
+    function loadGallery(){
+      if(gbusy||gend)return;
+      var my=gen;gbusy=true;gMore.disabled=true;gMsg.textContent="読み込み中…";
+      getPosts(function(){return "photo_path=not.is.null&select=shop_id,"+pfields()+"&order=created_at.desc&limit="+GN+"&offset="+goff;})
+        .then(function(r){if(!r.ok)throw new Error("gal");return r.json();})
+        .then(function(rows){
+          if(my!==gen)return;
+          goff+=rows.length;if(rows.length<GN)gend=true;
+          rows.forEach(function(p){
+            var s=shopById[p.shop_id];
+            if(!s||pdata.reported[p.id])return;
+            var b=document.createElement("button"),im=document.createElement("img");
+            b.type="button";b.setAttribute("aria-label",s.name+"の写真を大きく見る");
+            im.src=photoUrl(p.photo_path);im.alt=s.name+"の投稿写真";im.loading="lazy";im.decoding="async";
+            b.appendChild(im);
+            var lc=document.createElement("span");lc.className="lc";b.appendChild(lc);paintBadge(lc,p);
+            b.addEventListener("click",function(){openPhoto(p,s,lc);});
+            gGrid.appendChild(b);gCount++;
+          });
+          gMsg.textContent=gCount?"":"まだ写真がありません。店の詳細から、最初の1枚を投稿してみませんか。";
+          gMore.hidden=gend;
+        })
+        .catch(function(){if(my===gen)gMsg.textContent="写真を読み込めませんでした。時間をおいて、ページを再読み込みしてください。";})
+        .then(function(){if(my===gen){gbusy=false;gMore.disabled=false;}});
+    }
+    galReload=function(){gen++;goff=0;gend=false;gbusy=false;gCount=0;gGrid.textContent="";loadGallery();};
+    gMore.addEventListener("click",loadGallery);
+    gal.hidden=false;document.getElementById("galjump").hidden=false;loadGallery();
+  }
+
+  /* ---------- 店の追加リクエスト: 運営だけが読める表に送る ---------- */
+  if(sbOn()){
+    var rqPanel=document.getElementById("reqpanel"),rqForm=document.getElementById("reqform"),rqMsg=document.getElementById("rqmsg"),
+        rqSend=document.getElementById("rqsend"),rqSending=false,RQK="paso-jiro-req-last";
+    function rqNote(t,ok){rqMsg.className=ok?"pok":"perr";rqMsg.textContent=t||"";}
+    function norm(t){return String(t||"").replace(/[\s　・･\-－ー()（）「」『』]/g,"").toLowerCase();}
+    function alreadyListed(name,place){
+      var n=norm(name),pl=norm(place);if(!n)return null;
+      return SHOPS.filter(function(s){return norm(s.name)===n&&(pl.length<2||norm(s.addr||"").indexOf(pl)>=0||pl.indexOf(norm(s.area||"x"))>=0);})[0]||null;
+    }
+    rqForm.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(rqSending)return;
+      if(document.getElementById("rqweb").value)return;
+      var name=document.getElementById("rqname").value.trim(),place=document.getElementById("rqplace").value.trim(),
+          url=document.getElementById("rqurl").value.trim(),note=document.getElementById("rqnote").value.trim();
+      if(!name){rqNote("店名を書いてください。",false);return;}
+      if(!place){rqNote("場所(住所、または市区町村と最寄り駅)を書いてください。",false);return;}
+      if(url&&!/^https?:\/\/\S+$/i.test(url)){rqNote("参考のページは、https:// で始まるアドレスにしてください。わからなければ空でも大丈夫です。",false);return;}
+      var dup=alreadyListed(name,place);
+      if(dup){rqNote("「"+dup.name+"」は、すでに載っています(地図や近い順のリストで探せます)。",false);return;}
+      try{var last=+localStorage.getItem(RQK)||0;if(Date.now()-last<20000){rqNote("続けて送れません。少し待ってください。",false);return;}}catch(x){}
+      rqSending=true;rqSend.disabled=true;rqNote("送っています…",true);
+      sbFetch("/rest/v1/shop_requests",{method:"POST",headers:{"Content-Type":"application/json",Prefer:"return=minimal"},
+        body:JSON.stringify({name:name,place:place,url:url||null,note:note||null})})
+        .then(function(r){
+          if(r.ok){
+            try{localStorage.setItem(RQK,String(Date.now()));}catch(x){}
+            rqForm.reset();rqNote("送りました。ありがとうございます。掲載の基準を満たすか確認して、追加します。",true);return;
+          }
+          return r.text().then(function(t){
+            rqNote(/rate_limited/.test(t)?"短い時間に送りすぎです。少し待ってからお試しください。":
+                   /PGRST205|schema cache|does not exist/.test(t)?"いまはリクエストを受け付けていません。":"送れませんでした。内容を見直して、もう一度お試しください。",false);
+          });
+        })
+        .catch(function(){rqNote("送れませんでした。通信を確認して、もう一度お試しください。",false);})
+        .then(function(){rqSending=false;rqSend.disabled=false;});
+    });
+    rqPanel.hidden=false;document.getElementById("reqjump").hidden=false;
+  }
 
   refresh();
 }, function(){
