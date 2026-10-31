@@ -1,0 +1,23 @@
+{
+  "packageId": "io.github.pasojirodev.twa",
+  "host": "pasojiro-dev.github.io",
+  "name": "パソ二郎",
+  "launcherName": "パソ二郎",
+  "display": "standalone",
+  "themeColor": "#F2C100",
+  "themeColorDark": "#14110E",
+  "navigationColor": "#F2C100",
+  "backgroundColor": "#F2C100",
+  "enableNotifications": false,
+  "startUrl": "/",
+  "iconUrl": "https://pasojiro-dev.github.io/icon-512.png",
+  "maskableIconUrl": "https://pasojiro-dev.github.io/icon-512.png",
+  "webManifestUrl": "https://pasojiro-dev.github.io/manifest.webmanifest",
+  "appVersion": "1",
+  "appVersionCode": 1,
+  "signingKey": { "path": "./android.keystore", "alias": "pasojiro" },
+  "fallbackType": "customtabs",
+  "minSdkVersion": 21,
+  "orientation": "default",
+  "isChromeOSOnly": false
+}
